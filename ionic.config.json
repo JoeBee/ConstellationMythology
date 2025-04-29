@@ -1,0 +1,7 @@
+{
+  "name": "constellation-mythology",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
