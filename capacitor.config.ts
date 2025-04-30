@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'bcjj.Heavenly.Myths',
   appName: 'Heavenly Myths',
   webDir: 'www',
   plugins: {
@@ -9,8 +9,8 @@ const config: CapacitorConfig = {
       launchShowDuration: 3000, // Display splash for 3 seconds
       launchAutoHide: true,
       // backgroundColor: "#ffffffff", // Optional: Set background color
-      // androidSplashResourceName: "splash", // Should default correctly
-      // androidScaleType: "CENTER_CROP", // Optional: Adjust how splash image scales
+      androidSplashResourceName: "splash", // Explicitly set resource name
+      androidScaleType: "CENTER_CROP", // Adjust how splash image scales
       showSpinner: false, // Optional: Hide spinner if not desired
       splashFullScreen: true, // Optional: Use fullscreen splash
       splashImmersive: true, // Optional: Use immersive mode
