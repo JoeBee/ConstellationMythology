@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
@@ -33,7 +33,14 @@ import { Router } from '@angular/router';
 })
 export class MythPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
-  constellationData: ConstellationData | null = null;
+  constellationData: ConstellationData = {
+    name: null,
+    symbol: null,
+    myth: null,
+    mythLong: null,
+    imagePath: null
+  };
+  hasValidData: boolean = false;
   private dataSubscription: Subscription | null = null;
   private gesture?: Gesture;
 
@@ -42,16 +49,26 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     private alertController: AlertController,
     private router: Router,
     private gestureCtrl: GestureController,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private cdRef: ChangeDetectorRef
   ) {
     addIcons({ micOutline });
     addIcons({ triangle, ellipse, square, starOutline, bookOutline, chevronBackOutline });
   }
 
   ngOnInit() {
-    this.dataSubscription = this.constellationService.currentConstellationData.subscribe(data => {
+    this.dataSubscription = this.constellationService.currentConstellationData.subscribe(async data => {
       console.log('MythPage received data:', data);
-      this.constellationData = data.name ? data : null;
+      if (data.name && data.symbol) {
+        const mythLong = await this.constellationService.getMythLong(data.symbol);
+        this.constellationData = { ...data, mythLong };
+        this.hasValidData = true;
+        console.log('MythPage updated with long myth:', this.constellationData);
+        this.cdRef.detectChanges();
+      } else {
+        this.constellationData = { name: null, symbol: null, myth: null, mythLong: null, imagePath: null };
+        this.hasValidData = false;
+      }
     });
   }
 
@@ -91,22 +108,34 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigateByUrl('/tabs/constellation', { replaceUrl: true });
   }
 
-  async narrateMyth() {
-    const mythToNarrate = this.constellationData?.myth;
-
-    if (!mythToNarrate || mythToNarrate.startsWith('No myth found')) {
-      await this.presentErrorAlert('Narration Error', 'Myth text not available to narrate.');
+  async narrateMythShort() {
+    if (!this.hasValidData || !this.constellationData?.myth || this.constellationData.myth.startsWith('No short myth found')) {
+      await this.presentErrorAlert('Narration Error', 'Short myth text not available to narrate.');
       return;
     }
-    console.log(`Narrating myth for: ${this.constellationData?.name}`);
+    console.log(`Narrating short myth for: ${this.constellationData?.name}`);
+    await this.speakText(this.constellationData.myth, 'Short Myth Narration');
+  }
+
+  async narrateMythLong() {
+    if (!this.hasValidData || !this.constellationData?.mythLong || this.constellationData.mythLong.startsWith('No long myth found')) {
+      await this.presentErrorAlert('Narration Error', 'Full story text not available to narrate.');
+      return;
+    }
+    console.log(`Narrating full story for: ${this.constellationData?.name}`);
+    await this.speakText(this.constellationData.mythLong, 'Full Story Narration');
+  }
+
+  // Helper function for TTS
+  private async speakText(text: string, logContext: string) {
     try {
       await TextToSpeech.speak({
-        text: mythToNarrate,
+        text: text,
         lang: 'en-US', rate: 1.0, pitch: 1.0, volume: 1.0, category: 'ambient'
       });
-      console.log('TTS started successfully on Myth page.');
+      console.log(`TTS started successfully for ${logContext} on Myth page.`);
     } catch (error) {
-      console.error('Error starting TTS on Myth page:', error);
+      console.error(`Error starting TTS for ${logContext} on Myth page:`, error);
       let errorMessage = 'Could not start text-to-speech.';
       if (error instanceof Error) { errorMessage = error.message; }
       await this.presentErrorAlert('TTS Error', errorMessage);

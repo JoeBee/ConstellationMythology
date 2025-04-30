@@ -283,7 +283,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  async narrateMyth() {
+  async narrateMythShort() {
     // Get current data from the service
     const currentData = this.constellationService.getCurrentData();
     // Myth should already be loaded into the service's current data by findConstellation

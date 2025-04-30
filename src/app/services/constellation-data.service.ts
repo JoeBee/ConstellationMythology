@@ -7,6 +7,7 @@ export interface ConstellationData {
   name: string | null;
   symbol: string | null;
   myth: string | null;
+  mythLong?: string | null;
   imagePath: string | null;
 }
 
@@ -15,14 +16,22 @@ export interface ConstellationData {
 })
 export class ConstellationDataService {
 
-  private mythsUrl = 'assets/data/constellation-myths.json';
+  private dataUrl = 'assets/data/constellations.json';
+  private mythsUrl = 'assets/data/constellation-myths-short.json';
+  private mythsLongUrl = 'assets/data/constellation-myths-long.json';
+  private starsUrl = 'assets/data/stars.json';
+  private dsoUrl = 'assets/data/dso.json';
+  private linesUrl = 'assets/data/constellation-lines.json';
   private constellationMyths: { [key: string]: string } | null = null;
+  private constellationMythsLong: { [key: string]: string } | null = null;
   private mythsLoadedPromise: Promise<void>;
+  private mythsLongLoadedPromise: Promise<void>;
 
   private initialData: ConstellationData = {
     name: null,
     symbol: null,
     myth: null,
+    mythLong: null,
     imagePath: null
   };
 
@@ -34,26 +43,44 @@ export class ConstellationDataService {
 
   constructor(private http: HttpClient) {
     this.mythsLoadedPromise = this.loadMyths();
+    this.mythsLongLoadedPromise = this.loadLongMyths();
   }
 
-  // Method to load myths from JSON
+  // Method to load short myths from JSON
   private loadMyths(): Promise<void> {
-    console.log('Loading constellation myths...');
+    console.log('Loading short constellation myths...');
     return firstValueFrom(
       this.http.get<{ [key: string]: string }>(this.mythsUrl)
         .pipe(
           tap(myths => {
             this.constellationMyths = myths;
-            console.log('Constellation myths loaded successfully.');
+            console.log('Short constellation myths loaded successfully.');
           })
         )
     ).then(() => { }).catch(error => {
-      console.error('Failed to load constellation myths:', error);
+      console.error('Failed to load short constellation myths:', error);
       this.constellationMyths = {};
     });
   }
 
-  // Method to get a myth by symbol (asynchronous)
+  // Method to load long myths from JSON
+  private loadLongMyths(): Promise<void> {
+    console.log('Loading long constellation myths...');
+    return firstValueFrom(
+      this.http.get<{ [key: string]: string }>(this.mythsLongUrl)
+        .pipe(
+          tap(myths => {
+            this.constellationMythsLong = myths;
+            console.log('Long constellation myths loaded successfully.');
+          })
+        )
+    ).then(() => { }).catch(error => {
+      console.error('Failed to load long constellation myths:', error);
+      this.constellationMythsLong = {};
+    });
+  }
+
+  // Method to get a short myth by symbol (asynchronous)
   async getMyth(symbol: string): Promise<string> {
     await this.mythsLoadedPromise;
 
@@ -62,8 +89,22 @@ export class ConstellationDataService {
     if (this.constellationMyths && this.constellationMyths[upperCaseSymbol]) {
       return this.constellationMyths[upperCaseSymbol];
     } else {
-      console.warn(`Myth not found for symbol: ${symbol} (searched as ${upperCaseSymbol})`);
-      return `No myth found for ${symbol}.`;
+      console.warn(`Short myth not found for symbol: ${symbol} (searched as ${upperCaseSymbol})`);
+      return `No short myth found for ${symbol}.`;
+    }
+  }
+
+  // Method to get a long myth by symbol (asynchronous)
+  async getMythLong(symbol: string): Promise<string> {
+    await this.mythsLongLoadedPromise;
+
+    const upperCaseSymbol = symbol.toUpperCase();
+
+    if (this.constellationMythsLong && this.constellationMythsLong[upperCaseSymbol]) {
+      return this.constellationMythsLong[upperCaseSymbol];
+    } else {
+      console.warn(`Long myth not found for symbol: ${symbol} (searched as ${upperCaseSymbol})`);
+      return `No long myth found for ${symbol}.`;
     }
   }
 
