@@ -14,7 +14,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   GestureController,
-  Gesture
+  Gesture,
+  IonFooter
 } from '@ionic/angular/standalone';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
@@ -33,7 +34,8 @@ import { Router } from '@angular/router';
   imports: [
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonButton, CommonModule, IonIcon, IonItem, IonLabel,
-    IonCard, IonCardHeader, IonCardTitle
+    IonCard, IonCardHeader, IonCardTitle,
+    IonFooter
   ]
 })
 export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
@@ -210,7 +212,8 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
       const mythText = await this.constellationService.getMyth(constellation.symbol);
 
       // Use constellation name for image path
-      const imageName = constellation.name.toLowerCase().replace(/\s+/g, '_'); // Ensure lowercase, replace spaces with underscores
+      let imageName = constellation.name.toLowerCase().replace(/\s+/g, '_'); // Ensure lowercase, replace spaces with underscores
+      imageName = imageName.replace('_', '-');
       const imagePath = `assets/constellations/${imageName}-ann.jpg`;
 
       // Update local state for immediate UI feedback

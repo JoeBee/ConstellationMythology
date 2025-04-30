@@ -23,12 +23,6 @@
   <!-- Display Constellation Data if available -->
   <div *ngIf="constellationData; else noData" style="display: flex; justify-content: flex-end;">
     <ion-card>
-      <ion-button style="background-color: lightblue" (click)="narrateMyth()" fill="clear" aria-label="Narrate myth">
-        <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-      </ion-button>
-    </ion-card>
-
-    <ion-card>
       <ion-card-header>
         <ion-card-title>{{ constellationData?.name }}</ion-card-title>
       </ion-card-header>
@@ -36,6 +30,12 @@
         <p>{{ constellationData?.myth }}</p>
       </ion-card-content>
     </ion-card>
+
+    <div>
+      <ion-button style="background-color: lightblue" (click)="narrateMyth()" fill="clear" aria-label="Narrate myth">
+        <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+      </ion-button>
+    </div>
   </div>
 
   <!-- Template to show if no data -->
