@@ -8,6 +8,10 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
 
+  <!-- Swipe Right Indicator -->
+  <ion-icon name="chevron-forward-outline" class="swipe-indicator swipe-indicator-right"
+    (click)="navigateToMyth()"></ion-icon>
+
   <!-- Constellation Info Card -->
   <ion-card
     *ngIf="currentConstellationName && currentConstellationName !== 'Unknown' && currentConstellationName !== 'Error finding constellation'"

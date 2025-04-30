@@ -25,6 +25,8 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 // Import the service
 import { ConstellationDataService, ConstellationData } from '../services/constellation-data.service';
 import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { chevronForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-constellation',
@@ -58,7 +60,9 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private gestureCtrl: GestureController,
     private elementRef: ElementRef
-  ) { }
+  ) {
+    addIcons({ chevronForwardOutline });
+  }
 
   ngOnInit() {
     this.startOrientationListener();
@@ -331,5 +335,11 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
 
     this.gesture.enable(true);
     console.log('Swipe gesture enabled for Constellation page');
+  }
+
+  // Navigate to Myth page when icon is clicked
+  navigateToMyth() {
+    console.log('Forward icon clicked, navigating to Myth page');
+    this.router.navigateByUrl('/tabs/myth', { replaceUrl: true });
   }
 }

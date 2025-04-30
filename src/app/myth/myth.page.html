@@ -7,6 +7,10 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Swipe Left Indicator -->
+  <ion-icon name="chevron-back-outline" class="swipe-indicator swipe-indicator-left"
+    (click)="navigateToConstellation()"></ion-icon>
+
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Myth</ion-title>

@@ -13,6 +13,7 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { addIcons } from 'ionicons';
 import { micOutline } from 'ionicons/icons';
 import { triangle, ellipse, square, starOutline, bookOutline } from 'ionicons/icons';
+import { chevronBackOutline } from 'ionicons/icons';
 import { IonTabs, IonTabBar, IonTabButton, IonLabel } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -44,7 +45,7 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     private elementRef: ElementRef
   ) {
     addIcons({ micOutline });
-    addIcons({ triangle, ellipse, square, starOutline, bookOutline });
+    addIcons({ triangle, ellipse, square, starOutline, bookOutline, chevronBackOutline });
   }
 
   ngOnInit() {
@@ -82,6 +83,12 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
 
     this.gesture.enable(true);
     console.log('Swipe gesture enabled for Myth page');
+  }
+
+  // Navigate to Constellation page when icon is clicked
+  navigateToConstellation() {
+    console.log('Back icon clicked, navigating to Constellation page');
+    this.router.navigateByUrl('/tabs/constellation', { replaceUrl: true });
   }
 
   async narrateMyth() {

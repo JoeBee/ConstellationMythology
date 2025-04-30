@@ -42,3 +42,23 @@
     /* Bright yellow */
     box-shadow: 0 0 5px rgba(255, 255, 0, 0.6);
 }
+
+.swipe-indicator {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    color: var(--ion-color-primary);
+    opacity: 1;
+    z-index: 1000;
+}
+
+.swipe-indicator-left {
+    left: 10px;
+    /* Adjust spacing from edge */
+}
+
+.swipe-indicator-right {
+    right: 10px;
+    /* Adjust spacing from edge */
+}
