@@ -1,0 +1,57 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Constellation Identifier
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Constellation</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Center content -->
+  <div class="ion-text-center ion-margin-top">
+    <strong>Point your device to the sky</strong>
+  </div>
+
+  <ion-item lines="none" class="ion-margin-top">
+    <ion-label>
+      <p>Location: {{ currentLatitude?.toFixed(4) ?? 'N/A' }}, {{ currentLongitude?.toFixed(4) ?? 'N/A' }}</p>
+    </ion-label>
+  </ion-item>
+
+  <!-- Constellation Info Card -->
+  <ion-card
+    *ngIf="currentConstellationName && currentConstellationName !== 'Unknown' && currentConstellationName !== 'Error finding constellation'"
+    class="ion-margin-top">
+    <img *ngIf="currentConstellationImage" [src]="currentConstellationImage"
+      alt="{{ currentConstellationName }} Image" />
+    <ion-card-header>
+      <ion-card-title>{{ currentConstellationName }}</ion-card-title>
+    </ion-card-header>
+    <!-- Optional: Add ion-card-content here if needed later -->
+  </ion-card>
+
+  <!-- Message if no constellation found yet or error -->
+  <div
+    *ngIf="!currentConstellationName || currentConstellationName === 'Unknown' || currentConstellationName === 'Error finding constellation'"
+    class="ion-text-center ion-margin-top">
+    <p>{{ currentConstellationName === 'Error finding constellation' ? 'Could not determine constellation.' : 'Press
+      button below to find constellation.' }}</p>
+  </div>
+
+  <!-- Buttons Div -->
+  <div class="ion-text-center ion-margin-top">
+    <ion-button (click)="findConstellation()" expand="block">Find Constellation</ion-button>
+    <ion-button (click)="narrateMyth()"
+      [disabled]="!currentConstellationName || currentConstellationName === 'Unknown' || currentConstellationName === 'Error finding constellation'"
+      fill="clear" class="ion-margin-start">
+      <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+</ion-content>

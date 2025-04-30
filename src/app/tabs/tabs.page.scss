@@ -1,1 +1,36 @@
+ion-tab-bar {
+    min-height: 80px;
+    --background: #0a0e2a;
+    background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+    background-size: 50px 50px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    // Optional: Add custom styles to the tab bar itself
+    // --background: var(--ion-color-primary);
+}
 
+ion-tab-button {
+    // Optional: Add custom styles to each tab button
+    --color: white;
+    --color-selected: #4d8df8;
+
+    // Temporarily removed to debug icon visibility - Restoring styles
+    // /*
+    ion-icon {
+        font-size: 3.5rem; // Make icons large
+        // Optional: Adjust icon size or margin
+        // font-size: 1.5rem;
+    }
+
+    ion-label {
+        font-size: 14px;
+        white-space: normal;
+        line-height: 1.2;
+        padding-bottom: 25px; // Move label up from bottom
+        // Move the label up slightly from the bottom
+        // Adjust this value as needed
+        // Optional: Adjust font size if needed
+        // font-size: 0.8rem;
+    }
+
+    // */
+}

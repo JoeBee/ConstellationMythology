@@ -1,0 +1,19 @@
+ion-content {
+    /* Fit width, adjust height automatically */
+    --background: url('/assets/background_myth.jpg') no-repeat center center / cover;
+}
+
+/* Optional: Add styles to make text more readable over the background */
+ion-card {
+    /* Example: Add a semi-transparent background */
+    --background: rgba(var(--ion-color-light-rgb, 244, 245, 248), 0.85);
+    /* Semi-transparent light background */
+}
+
+ion-card-title,
+ion-card-content p {
+    color: var(--ion-color-dark, #222428);
+    /* Ensure text is dark enough for light background */
+    text-shadow: none;
+    /* Remove shadow if background is light */
+}
