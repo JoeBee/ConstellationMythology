@@ -17,3 +17,9 @@ ion-card-content p {
     text-shadow: none;
     /* Remove shadow if background is light */
 }
+
+.info-text {
+    color: black;
+    font-size: 1.5rem;
+    /* Default to Ionic blue if primary is not set */
+}

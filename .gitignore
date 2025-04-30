@@ -68,3 +68,17 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+/ios/App/App
+/android/app/src/main/res
+/android/app/src/main/res
+/android/app/src/main
+/android/app/src/main
+/android/app/src/main/res
+/android
+/android/app
+/android
+/android/app
+/android/app/src
+/android/app/src/main
+/android/app/src/main/res
+/android/app/src/main/res/drawable-land-night-hdpi
