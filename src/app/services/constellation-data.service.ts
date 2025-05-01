@@ -41,6 +41,7 @@ export class ConstellationDataService {
   // Observable stream for components to subscribe to
   currentConstellationData = this.constellationDataSource.asObservable();
 
+
   constructor(private http: HttpClient) {
     this.mythsLoadedPromise = this.loadMyths();
     this.mythsLongLoadedPromise = this.loadLongMyths();

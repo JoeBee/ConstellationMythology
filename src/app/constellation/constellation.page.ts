@@ -28,6 +28,7 @@ import { ConstellationDataService, ConstellationData } from '../services/constel
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { chevronForwardOutline } from 'ionicons/icons';
+import { AstrologyDataService, AstrologyData } from '../services/astrology-data.service';
 
 @Component({
   selector: 'app-constellation',
@@ -39,15 +40,15 @@ import { chevronForwardOutline } from 'ionicons/icons';
     IonButton, CommonModule, IonIcon, IonItem, IonLabel,
     IonCard, IonCardHeader, IonCardTitle,
     IonFooter, IonCardContent
-  ]
+  ],
 })
 export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   isTesting: boolean = true; // Added for debugging
   currentLatitude: number | null = null;
   currentLongitude: number | null = null;
-  currentConstellationName: string | null = 'Unknown';
-  currentConstellationImage: string | null = null;
+  // Removed: currentConstellationName: string | null = 'Unknown';
+  // Removed: currentConstellationImage: string | null = null;
   // --- Device Orientation Properties ---
   currentAzimuth: number | null = null; // alpha (0-360)
   currentAltitude: number | null = null; // beta (-180 to 180 or -90 to 90) - Using this as altitude proxy
@@ -55,10 +56,15 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   private orientationErrorDisplayed = false; // Flag to prevent multiple alerts
   private gesture?: Gesture;
 
+  // Expose the service observable to the template
+  constellationData$ = this.constellationService.currentConstellationData;
+  astrologyData$ = this.astrologyService.currentAstrologyData;
+
   constructor(
     private loadingController: LoadingController,
     private alertController: AlertController,
     private constellationService: ConstellationDataService,
+    private astrologyService: AstrologyDataService,
     private router: Router,
     private gestureCtrl: GestureController,
     private elementRef: ElementRef
@@ -164,9 +170,8 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
         this.orientationErrorDisplayed = true; // Prevent repeated alerts
       }
       // Optionally set a specific error state for the UI instead of 'Unknown'
-      this.currentConstellationName = 'Error: Orientation Unavailable';
-      this.currentConstellationImage = null;
-      this.constellationService.clearData(); // Clear service data as well
+      this.constellationService.updateConstellationData({ name: 'Error: Orientation Unavailable', symbol: '', myth: '', imagePath: null });
+      this.astrologyService.updateAstrologyData({ name: 'Error: Orientation Unavailable', symbol: '', astrology: '', imagePath: null });
       return; // Stop execution if orientation is missing
     }
 
@@ -178,9 +183,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
 
     // Clear previous data in service
     this.constellationService.clearData();
-    // Reset local state for UI feedback
-    this.currentConstellationName = 'Unknown';
-    this.currentConstellationImage = null;
+    this.astrologyService.clearData();
 
     try {
       const position = await this.getCurrentPosition();
@@ -216,15 +219,12 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
 
       // Fetch the myth asynchronously from the service
       const mythText = await this.constellationService.getMyth(constellation.symbol);
+      const astrologyText = await this.astrologyService.getAstrology(constellation.symbol);
 
       // Use constellation name for image path
       let imageName = constellation.name.toLowerCase().replace(/\s+/g, '_'); // Ensure lowercase, replace spaces with underscores
       imageName = imageName.replace('_', '-');
       const imagePath = `assets/constellations/${imageName}-ann.jpg`;
-
-      // Update local state for immediate UI feedback
-      this.currentConstellationName = constellation.name;
-      this.currentConstellationImage = imagePath;
 
       // Update shared service
       const data: ConstellationData = {
@@ -233,25 +233,23 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
         myth: mythText,
         imagePath: imagePath
       };
+
+      const dataAstrology: AstrologyData = {
+        name: constellation.name,
+        symbol: constellation.symbol,
+        astrology: astrologyText,
+        imagePath: imagePath
+      };
+
       this.constellationService.updateConstellationData(data);
+      this.astrologyService.updateAstrologyData(dataAstrology);
 
     } catch (error) {
       console.error('Error finding constellation:', error);
-      // Update local state
-      // Keep specific error if it's orientation related, otherwise generic
-      if (this.currentConstellationName !== 'Error: Orientation Unavailable') {
-        this.currentConstellationName = 'Error finding constellation';
-      }
-      this.currentConstellationImage = null;
-      // Clear service data on error
-      this.constellationService.clearData();
-
-      let errorMessage = 'An unknown error occurred.';
-      if (error instanceof Error) { errorMessage = error.message; }
-      // Avoid showing redundant alerts if orientation failed
-      if (this.currentConstellationName !== 'Error: Orientation Unavailable') {
-        await this.presentErrorAlert('Constellation Error', errorMessage);
-      }
+      // Use the service to potentially show specific error message if needed, or handle it here
+      // Example: this.constellationService.updateConstellationData({ name: 'Error: ' + errorMessage, ...initialData });
+      // For now, just logging the error might suffice if the template handles null/initial state
+      this.presentErrorAlert('Error', `Failed to find constellation: ${error instanceof Error ? error.message : error}`);
     } finally {
       await loading.dismiss();
     }
@@ -285,30 +283,30 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  async narrateMythShort() {
-    // Get current data from the service
-    const currentData = this.constellationService.getCurrentData();
-    // Myth should already be loaded into the service's current data by findConstellation
-    const mythToNarrate = currentData.myth;
+  // async narrateMythShort() {
+  //   // Get current data from the service
+  //   const currentData = this.constellationService.getCurrentData();
+  //   // Myth should already be loaded into the service's current data by findConstellation
+  //   const mythToNarrate = currentData.myth;
 
-    if (!mythToNarrate || mythToNarrate.startsWith('No myth found')) {
-      await this.presentErrorAlert('Narration Error', 'Myth text not available to narrate.');
-      return;
-    }
-    console.log(`Narrating myth for: ${currentData.name}`);
-    try {
-      await TextToSpeech.speak({
-        text: mythToNarrate,
-        lang: 'en-US', rate: 1.0, pitch: 1.0, volume: 1.0, category: 'ambient'
-      });
-      console.log('TTS started successfully.');
-    } catch (error) {
-      console.error('Error starting TTS:', error);
-      let errorMessage = 'Could not start text-to-speech.';
-      if (error instanceof Error) { errorMessage = error.message; }
-      await this.presentErrorAlert('TTS Error', errorMessage);
-    }
-  }
+  //   if (!mythToNarrate || mythToNarrate.startsWith('No myth found')) {
+  //     await this.presentErrorAlert('Narration Error', 'Myth text not available to narrate.');
+  //     return;
+  //   }
+  //   console.log(`Narrating myth for: ${currentData.name}`);
+  //   try {
+  //     await TextToSpeech.speak({
+  //       text: mythToNarrate,
+  //       lang: 'en-US', rate: 1.0, pitch: 1.0, volume: 1.0, category: 'ambient'
+  //     });
+  //     console.log('TTS started successfully.');
+  //   } catch (error) {
+  //     console.error('Error starting TTS:', error);
+  //     let errorMessage = 'Could not start text-to-speech.';
+  //     if (error instanceof Error) { errorMessage = error.message; }
+  //     await this.presentErrorAlert('TTS Error', errorMessage);
+  //   }
+  // }
 
   // Helper method to present error alerts
   async presentErrorAlert(header: string, message: string) {

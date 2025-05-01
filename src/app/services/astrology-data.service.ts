@@ -6,8 +6,8 @@ import { tap } from 'rxjs/operators';
 export interface AstrologyData {
     name: string | null;
     symbol: string | null;
-    myth: string | null;
-    mythLong?: string | null;
+    astrology: string | null;
+    astrologyLong?: string | null;
     imagePath: string | null;
 }
 
@@ -17,8 +17,8 @@ export interface AstrologyData {
 export class AstrologyDataService {
 
     // private dataUrl = 'assets/data/astrologys.json';
-    private mythsUrl = 'assets/data/astrology-short.json';
-    private mythsLongUrl = 'assets/data/astrology-long.json';
+    private astrologyUrl = 'assets/data/astrology-short.json';
+    private astrologyLongUrl = 'assets/data/astrology-long.json';
     // private starsUrl = 'assets/data/stars.json';
     // private dsoUrl = 'assets/data/dso.json';
     // private linesUrl = 'assets/data/astrology-lines.json';
@@ -30,8 +30,8 @@ export class AstrologyDataService {
     private initialData: AstrologyData = {
         name: null,
         symbol: null,
-        myth: null,
-        mythLong: null,
+        astrology: null,
+        astrologyLong: null,
         imagePath: null
     };
 
@@ -42,46 +42,46 @@ export class AstrologyDataService {
     currentAstrologyData = this.astrologyDataSource.asObservable();
 
     constructor(private http: HttpClient) {
-        this.astrologyLoadedPromise = this.loadMyths();
-        this.astrologyLongLoadedPromise = this.loadLongMyths();
+        this.astrologyLoadedPromise = this.loadAstrology();
+        this.astrologyLongLoadedPromise = this.loadLongAstrology();
     }
 
-    // Method to load short myths from JSON
-    private loadMyths(): Promise<void> {
-        console.log('Loading short astrology myths...');
+    // Method to load short Astrology from JSON
+    private loadAstrology(): Promise<void> {
+        console.log('Loading short astrology Astrologys...');
         return firstValueFrom(
-            this.http.get<{ [key: string]: string }>(this.mythsUrl)
+            this.http.get<{ [key: string]: string }>(this.astrologyUrl)
                 .pipe(
-                    tap(myths => {
-                        this.astrologyMyths = myths;
-                        console.log('Short astrology myths loaded successfully.');
+                    tap(astrology => {
+                        this.astrologyMyths = astrology;
+                        console.log('Short astrology astrology loaded successfully.');
                     })
                 )
         ).then(() => { }).catch(error => {
-            console.error('Failed to load short astrology myths:', error);
+            console.error('Failed to load short astrology astrology:', error);
             this.astrologyMyths = {};
         });
     }
 
-    // Method to load long myths from JSON
-    private loadLongMyths(): Promise<void> {
-        console.log('Loading long astrology myths...');
+    // Method to load long astrology from JSON
+    private loadLongAstrology(): Promise<void> {
+        console.log('Loading long astrology astrology...');
         return firstValueFrom(
-            this.http.get<{ [key: string]: string }>(this.mythsLongUrl)
+            this.http.get<{ [key: string]: string }>(this.astrologyLongUrl)
                 .pipe(
-                    tap(myths => {
-                        this.astrologyMythsLong = myths;
-                        console.log('Long astrology myths loaded successfully.');
+                    tap(astrology => {
+                        this.astrologyMythsLong = astrology;
+                        console.log('Long astrology astrology loaded successfully.');
                     })
                 )
         ).then(() => { }).catch(error => {
-            console.error('Failed to load long astrology myths:', error);
+            console.error('Failed to load long astrology astrology:', error);
             this.astrologyMythsLong = {};
         });
     }
 
-    // Method to get a short myth by symbol (asynchronous)
-    async getMyth(symbol: string): Promise<string> {
+    // Method to get a short astrology by symbol (asynchronous)
+    async getAstrology(symbol: string): Promise<string> {
         await this.astrologyLoadedPromise;
 
         const upperCaseSymbol = symbol.toUpperCase();
@@ -95,7 +95,7 @@ export class AstrologyDataService {
     }
 
     // Method to get a long myth by symbol (asynchronous)
-    async getMythLong(symbol: string): Promise<string> {
+    async getAstrologyLong(symbol: string): Promise<string> {
         await this.astrologyLongLoadedPromise;
 
         const upperCaseSymbol = symbol.toUpperCase();
@@ -103,8 +103,8 @@ export class AstrologyDataService {
         if (this.astrologyMythsLong && this.astrologyMythsLong[upperCaseSymbol]) {
             return this.astrologyMythsLong[upperCaseSymbol];
         } else {
-            console.warn(`Long myth not found for symbol: ${symbol} (searched as ${upperCaseSymbol})`);
-            return `No long myth found for ${symbol}.`;
+            console.warn(`Long astrology not found for symbol: ${symbol} (searched as ${upperCaseSymbol})`);
+            return `No long astrology found for ${symbol}.`;
         }
     }
 

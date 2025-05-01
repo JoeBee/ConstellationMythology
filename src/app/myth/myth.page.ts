@@ -33,23 +33,18 @@ import { Router } from '@angular/router';
 })
 export class MythPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
-  constellationData: ConstellationData = {
-    name: null,
-    symbol: null,
-    myth: null,
-    mythLong: null,
-    imagePath: null
-  };
   hasValidData: boolean = false;
+  currentMythLong: string | null = null;
   private dataSubscription: Subscription | null = null;
   private gesture?: Gesture;
+
+  constellationData$ = this.constellationService.currentConstellationData;
 
   constructor(
     private constellationService: ConstellationDataService,
     private alertController: AlertController,
     private router: Router,
     private gestureCtrl: GestureController,
-    private cdRef: ChangeDetectorRef
   ) {
     addIcons({ micOutline });
     addIcons({ starOutline, bookOutline, chevronBackOutline, chevronForwardOutline });
@@ -59,13 +54,11 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     this.dataSubscription = this.constellationService.currentConstellationData.subscribe(async data => {
       console.log('MythPage received data:', data);
       if (data.name && data.symbol) {
-        const mythLong = await this.constellationService.getMythLong(data.symbol);
-        this.constellationData = { ...data, mythLong };
+        this.currentMythLong = await this.constellationService.getMythLong(data.symbol);
         this.hasValidData = true;
-        console.log('MythPage updated with long myth:', this.constellationData);
-        this.cdRef.detectChanges();
+        console.log('MythPage updated. HasValidData=true, LongMyth fetched.');
       } else {
-        this.constellationData = { name: null, symbol: null, myth: null, mythLong: null, imagePath: null };
+        this.currentMythLong = null;
         this.hasValidData = false;
       }
     });
@@ -116,21 +109,23 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async narrateMythShort() {
-    if (!this.hasValidData || !this.constellationData?.myth || this.constellationData.myth.startsWith('No short myth found')) {
+    const currentData = this.constellationService.getCurrentData();
+    if (!currentData?.myth || currentData.myth.startsWith('No short myth found')) {
       await this.presentErrorAlert('Narration Error', 'Short myth text not available to narrate.');
       return;
     }
-    console.log(`Narrating short myth for: ${this.constellationData?.name}`);
-    await this.speakText(this.constellationData.myth, 'Short Myth Narration');
+    console.log(`Narrating short myth for: ${currentData.name}`);
+    await this.speakText(currentData.myth, 'Short Myth Narration');
   }
 
   async narrateMythLong() {
-    if (!this.hasValidData || !this.constellationData?.mythLong || this.constellationData.mythLong.startsWith('No long myth found')) {
+    const currentData = this.constellationService.getCurrentData();
+    if (!this.currentMythLong || this.currentMythLong.startsWith('No long myth found')) {
       await this.presentErrorAlert('Narration Error', 'Full story text not available to narrate.');
       return;
     }
-    console.log(`Narrating full story for: ${this.constellationData?.name}`);
-    await this.speakText(this.constellationData.mythLong, 'Full Story Narration');
+    console.log(`Narrating full story for: ${currentData?.name}`);
+    await this.speakText(this.currentMythLong, 'Full Story Narration');
   }
 
   private async speakText(text: string, logContext: string) {

@@ -7,67 +7,73 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-    <!-- Swipe Left (Back to Astrology) Indicator -->
+    <!-- Swipe Left (Back to Constellation) Indicator -->
     <ion-icon name="chevron-back-outline" class="swipe-indicator swipe-indicator-left"
         (click)="navigateToMyth()"></ion-icon>
 
-    <!-- Swipe Right (Forward to Astrology) Indicator -->
-    <!-- <ion-icon name="chevron-forward-outline" class="swipe-indicator swipe-indicator-right"
-        (click)="navigateToMyth()"></ion-icon> -->
-
     <ion-header collapse="condense">
         <ion-toolbar>
-            <ion-title size="large">Myth</ion-title>
+            <ion-title size="large">Astrology</ion-title>
         </ion-toolbar>
     </ion-header>
 
 
-    <!-- Display Astrology Data if available -->
+    <!-- Display Constellation Data if available -->
     <div *ngIf="hasValidData; else noData" style="display: flex; flex-direction: column; align-items: center;">
-        <!-- Buttons container -->
-        <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
-            <!-- Button for Short Myth Narration -->
-            <ion-button style="background-color: lightblue" (click)="narrateMythShort()" fill="clear"
-                aria-label="Narrate short myth">
-                <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-                <!-- <span style="font-size: 0.8em; margin-left: 4px;">Short</span> -->
-            </ion-button>
+        <!-- Use async pipe to get constellation data -->
+        <ng-container *ngIf="astrologyData$ | async as astrologyData">
+            <!-- Buttons container -->
+            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+                <!-- Button for Short Astrology Narration (pass data if needed, or keep as is if component handles it) -->
+                <ion-button style="background-color: lightblue" (click)="narrateAstrologyShort()" fill="clear"
+                    aria-label="Narrate short Astrology">
+                    <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+                    <!-- <span style="font-size: 0.8em; margin-left: 4px;">Short</span> -->
+                </ion-button>
 
-            <!-- Button for Long Myth Narration -->
-            <ion-button style="background-color: lightgreen" (click)="narrateMythLong()" fill="clear"
-                aria-label="Narrate full story">
-                <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-                <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Myth</span>
-            </ion-button>
-        </div>
+                <!-- Button for Long Astrology Narration (pass data if needed, or keep as is)-->
+                <ion-button style="background-color: lightgreen" (click)="narrateAstrologyLong()" fill="clear"
+                    aria-label="Narrate full story">
+                    <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+                    <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Astrology</span>
+                </ion-button>
+            </div>
 
-        <!-- Original Card for Short Myth -->
-        <ion-card style="width: 90%; max-width: 600px;">
-            <ion-card-header>
-                <ion-card-title>{{ astrologyData.name }}</ion-card-title>
-            </ion-card-header>
+            <!-- Original Card for Short Astrology -->
+            <ion-card style="width: 90%; max-width: 600px;">
+                <ion-card-header>
+                    <!-- Use name from async pipe -->
+                    <ion-card-title>{{ astrologyData?.name }}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <!-- Use Astrology from async pipe -->
+                    <p>{{ astrologyData?.astrology }}</p>
+                </ion-card-content>
+            </ion-card>
+        </ng-container>
+
+        <ion-card style="width: 90%; max-width: 600px;" *ngIf="currentAstrologyLong">
             <ion-card-content>
-                <p>{{ astrologyData.myth }}</p>
+                <p>{{ currentAstrologyLong }}</p>
             </ion-card-content>
         </ion-card>
 
-        <!-- Duplicated Card for Long Myth -->
-        <ion-card style="width: 90%; max-width: 600px;">
-            <!-- <ion-card-header>
-          <ion-card-title>{{ astrologyData.name }} (Full Story)</ion-card-title>
-        </ion-card-header> -->
-            <ion-card-content>
-                <p>{{ astrologyData.mythLong }}</p>
-            </ion-card-content>
-        </ion-card>
     </div>
 
     <!-- Template to show if no data -->
     <ng-template #noData>
-        <div class="ion-text-center ion-padding">
-            <p class="info-text" style="color: yellow;">Go to the Constellation tab and identify a constellation first.
-            </p>
+        <!-- Wrapper div to enable flex centering -->
+        <!-- ion-fill-content might require parent to have known height, using 100% height style -->
+        <div style="height: 100%;" class="ion-justify-content-center ion-align-items-center ion-flex">
+            <!-- Centered content -->
+            <div class="ion-text-center">
+                <p class="info-text" style="color: yellow;">Go to the Constellation tab and identify a constellation
+                    first.</p>
+            </div>
         </div>
     </ng-template>
+
+
+
 
 </ion-content>

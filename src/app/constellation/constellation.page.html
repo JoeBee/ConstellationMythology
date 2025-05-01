@@ -13,24 +13,30 @@
     (click)="navigateToMyth()"></ion-icon>
 
   <!-- Constellation Info Card -->
-  <ion-card
-    *ngIf="currentConstellationName && currentConstellationName !== 'Unknown' && currentConstellationName !== 'Error finding constellation'"
-    class="ion-margin-top">
-    <img *ngIf="currentConstellationImage" [src]="currentConstellationImage"
-      alt="{{ currentConstellationName }} Image" />
+  <ng-container *ngIf="constellationData$ | async as constellationData">
+    <ion-card
+      *ngIf="constellationData.name && constellationData.name !== 'Unknown' && !constellationData.name.startsWith('Error:')"
+      class="ion-margin-top">
+      <img *ngIf="constellationData.imagePath" [src]="constellationData.imagePath"
+        alt="{{ constellationData.name }} Image" />
 
-    <ion-card-header>
-      <ion-card-title>{{ currentConstellationName }}</ion-card-title>
-    </ion-card-header>
-  </ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ constellationData.name }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
 
-  <div
-    *ngIf="!currentConstellationName || currentConstellationName === 'Unknown' || currentConstellationName === 'Error finding constellation'"
-    class="ion-text-center ion-margin-top">
-    <p>{{ currentConstellationName === 'Error finding constellation' ?
-      'Could not determine constellation.' :
-      '' }}</p>
-  </div>
+    <div
+      *ngIf="!constellationData.name || constellationData.name === 'Unknown' || constellationData.name.startsWith('Error:')"
+      class="ion-text-center ion-margin-top">
+      <p>{{ constellationData.name?.startsWith('Error:') ?
+        'Could not determine constellation.' :
+        'Point your device to the sky and press the button.'
+        }}
+      </p>
+      <!-- Show specific error message -->
+      <p *ngIf="constellationData.name?.startsWith('Error:')"><i>Reason: {{ constellationData.name }}</i></p>
+    </div>
+  </ng-container>
 
 
   <div class="ion-text-center ion-margin-top">
@@ -47,13 +53,13 @@
     <ion-card-header>
       <ion-card-title>Debug Info</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
+    <ion-card-content *ngIf="constellationData$ | async as constellationData">
       <p>Lat: {{ currentLatitude?.toFixed(4) ?? 'N/A' }}</p>
       <p>Lon: {{ currentLongitude?.toFixed(4) ?? 'N/A' }}</p>
       <p>Azimuth (alpha): {{ currentAzimuth?.toFixed(2) ?? 'N/A' }}</p>
       <p>Altitude (beta): {{ currentAltitude?.toFixed(2) ?? 'N/A' }}</p>
-      <p>Detected: {{ currentConstellationName ?? 'N/A' }} </p>
-      <p>Image: {{ currentConstellationImage ?? 'N/A' }}</p>
+      <p>Detected: {{ constellationData.name ?? 'N/A' }} </p>
+      <p>Image: {{ constellationData.imagePath ?? 'N/A' }}</p>
     </ion-card-content>
   </ion-card>
 

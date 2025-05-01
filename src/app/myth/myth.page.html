@@ -24,43 +24,43 @@
 
   <!-- Display Constellation Data if available -->
   <div *ngIf="hasValidData; else noData" style="display: flex; flex-direction: column; align-items: center;">
-    <!-- Buttons container -->
-    <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
-      <!-- Button for Short Myth Narration -->
-      <ion-button style="background-color: lightblue" (click)="narrateMythShort()" fill="clear"
-        aria-label="Narrate short myth">
-        <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-        <!-- <span style="font-size: 0.8em; margin-left: 4px;">Short</span> -->
-      </ion-button>
+    <!-- Use async pipe to get constellation data -->
+    <ng-container *ngIf="constellationData$ | async as constellationData">
+      <!-- Buttons container -->
+      <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+        <!-- Button for Short Myth Narration (pass data if needed, or keep as is if component handles it) -->
+        <ion-button style="background-color: lightblue" (click)="narrateMythShort()" fill="clear"
+          aria-label="Narrate short myth">
+          <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+          <!-- <span style="font-size: 0.8em; margin-left: 4px;">Short</span> -->
+        </ion-button>
 
-      <!-- Button for Long Myth Narration -->
-      <ion-button style="background-color: lightgreen" (click)="narrateMythLong()" fill="clear"
-        aria-label="Narrate full story">
-        <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-        <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Myth</span>
-      </ion-button>
-    </div>
+        <!-- Button for Long Myth Narration (pass data if needed, or keep as is)-->
+        <ion-button style="background-color: lightgreen" (click)="narrateMythLong()" fill="clear"
+          aria-label="Narrate full story">
+          <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+          <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Myth</span>
+        </ion-button>
+      </div>
 
-    <!-- Original Card for Short Myth -->
-    <ion-card style="width: 90%; max-width: 600px;">
-      <ion-card-header>
-        <ion-card-title>{{ constellationData.name }}</ion-card-title>
-      </ion-card-header>
+      <!-- Original Card for Short Myth -->
+      <ion-card style="width: 90%; max-width: 600px;">
+        <ion-card-header>
+          <!-- Use name from async pipe -->
+          <ion-card-title>{{ constellationData?.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Use myth from async pipe -->
+          <p>{{ constellationData?.myth }}</p>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+
+    <ion-card style="width: 90%; max-width: 600px;" *ngIf="currentMythLong">
       <ion-card-content>
-        <p>{{ constellationData.myth }}</p>
+        <p>{{ currentMythLong }}</p>
       </ion-card-content>
     </ion-card>
-
-    <!-- Duplicated Card for Long Myth -->
-    <ion-card style="width: 90%; max-width: 600px;">
-      <!-- <ion-card-header>
-        <ion-card-title>{{ constellationData.name }} (Full Story)</ion-card-title>
-      </ion-card-header> -->
-      <ion-card-content>
-        <p>{{ constellationData.mythLong }}</p>
-      </ion-card-content>
-    </ion-card>
-
 
   </div>
 
