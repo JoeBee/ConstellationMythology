@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
@@ -13,7 +13,7 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { addIcons } from 'ionicons';
 import { micOutline } from 'ionicons/icons';
 import { triangle, ellipse, square, starOutline, bookOutline } from 'ionicons/icons';
-import { chevronBackOutline } from 'ionicons/icons';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { IonTabs, IonTabBar, IonTabButton, IonLabel } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -49,11 +49,10 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     private alertController: AlertController,
     private router: Router,
     private gestureCtrl: GestureController,
-    private elementRef: ElementRef,
     private cdRef: ChangeDetectorRef
   ) {
     addIcons({ micOutline });
-    addIcons({ triangle, ellipse, square, starOutline, bookOutline, chevronBackOutline });
+    addIcons({ starOutline, bookOutline, chevronBackOutline, chevronForwardOutline });
   }
 
   ngOnInit() {
@@ -95,6 +94,10 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
           console.log('Swipe right detected on Myth page');
           this.router.navigateByUrl('/tabs/constellation', { replaceUrl: true });
         }
+        else if (detail.deltaX < -100 && Math.abs(detail.deltaY) < 100) {
+          console.log('Swipe left detected on Constellation page');
+          this.router.navigateByUrl('/tabs/astrology', { replaceUrl: true });
+        }
       }
     }, true);
 
@@ -102,10 +105,14 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     console.log('Swipe gesture enabled for Myth page');
   }
 
-  // Navigate to Constellation page when icon is clicked
   navigateToConstellation() {
-    console.log('Back icon clicked, navigating to Constellation page');
+    console.log('Navigating to Constellation page from Myth');
     this.router.navigateByUrl('/tabs/constellation', { replaceUrl: true });
+  }
+
+  navigateToAstrology() {
+    console.log('Navigating to Astrology page from Myth');
+    this.router.navigateByUrl('/tabs/astrology', { replaceUrl: true });
   }
 
   async narrateMythShort() {
@@ -126,7 +133,6 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     await this.speakText(this.constellationData.mythLong, 'Full Story Narration');
   }
 
-  // Helper function for TTS
   private async speakText(text: string, logContext: string) {
     try {
       await TextToSpeech.speak({

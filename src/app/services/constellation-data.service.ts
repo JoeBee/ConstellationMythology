@@ -16,12 +16,12 @@ export interface ConstellationData {
 })
 export class ConstellationDataService {
 
-  private dataUrl = 'assets/data/constellations.json';
+  // private dataUrl = 'assets/data/constellations.json';
   private mythsUrl = 'assets/data/constellation-myths-short.json';
   private mythsLongUrl = 'assets/data/constellation-myths-long.json';
-  private starsUrl = 'assets/data/stars.json';
-  private dsoUrl = 'assets/data/dso.json';
-  private linesUrl = 'assets/data/constellation-lines.json';
+  // private starsUrl = 'assets/data/stars.json';
+  // private dsoUrl = 'assets/data/dso.json';
+  // private linesUrl = 'assets/data/constellation-lines.json';
   private constellationMyths: { [key: string]: string } | null = null;
   private constellationMythsLong: { [key: string]: string } | null = null;
   private mythsLoadedPromise: Promise<void>;

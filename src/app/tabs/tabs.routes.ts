@@ -17,6 +17,11 @@ export const routes: Routes = [
           import('../myth/myth.page').then((m) => m.MythPage),
       },
       {
+        path: 'astrology',
+        loadComponent: () =>
+          import('../astrology/astrology.page').then((m) => m.AstrologyPage),
+      },
+      {
         path: '',
         redirectTo: '/tabs/constellation',
         pathMatch: 'full',

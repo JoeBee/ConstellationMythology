@@ -7,9 +7,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <!-- Swipe Left Indicator -->
+  <!-- Swipe Left (Back to Constellation) Indicator -->
   <ion-icon name="chevron-back-outline" class="swipe-indicator swipe-indicator-left"
     (click)="navigateToConstellation()"></ion-icon>
+
+  <!-- Swipe Right (Forward to Astrology) Indicator -->
+  <ion-icon name="chevron-forward-outline" class="swipe-indicator swipe-indicator-right"
+    (click)="navigateToAstrology()"></ion-icon>
 
   <ion-header collapse="condense">
     <ion-toolbar>

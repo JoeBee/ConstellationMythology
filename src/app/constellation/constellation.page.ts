@@ -15,7 +15,8 @@ import {
   IonCardTitle,
   GestureController,
   Gesture,
-  IonFooter
+  IonFooter,
+  IonCardContent
 } from '@ionic/angular/standalone';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
@@ -37,11 +38,12 @@ import { chevronForwardOutline } from 'ionicons/icons';
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonButton, CommonModule, IonIcon, IonItem, IonLabel,
     IonCard, IonCardHeader, IonCardTitle,
-    IonFooter
+    IonFooter, IonCardContent
   ]
 })
 export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
+  isTesting: boolean = true; // Added for debugging
   currentLatitude: number | null = null;
   currentLongitude: number | null = null;
   currentConstellationName: string | null = 'Unknown';
