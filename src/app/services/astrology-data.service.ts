@@ -24,8 +24,13 @@ export class AstrologyDataService {
     // private linesUrl = 'assets/data/astrology-lines.json';
     private astrologyMyths: { [key: string]: string } | null = null;
     private astrologyMythsLong: { [key: string]: string } | null = null;
+    private astrologyNames: { [key: string]: string } | null = null;
     private astrologyLoadedPromise: Promise<void>;
     private astrologyLongLoadedPromise: Promise<void>;
+    private namesLoadedPromise: Promise<void>;
+
+    // Added URL for the name map
+    private namesUrl = 'assets/symbol-name-map.json';
 
     private initialData: AstrologyData = {
         name: null,
@@ -44,6 +49,7 @@ export class AstrologyDataService {
     constructor(private http: HttpClient) {
         this.astrologyLoadedPromise = this.loadAstrology();
         this.astrologyLongLoadedPromise = this.loadLongAstrology();
+        this.namesLoadedPromise = this.loadNames();
     }
 
     // Method to load short Astrology from JSON
@@ -77,6 +83,23 @@ export class AstrologyDataService {
         ).then(() => { }).catch(error => {
             console.error('Failed to load long astrology astrology:', error);
             this.astrologyMythsLong = {};
+        });
+    }
+
+    // Added: Method to load names from JSON
+    private loadNames(): Promise<void> {
+        console.log('Loading astrology subject names map...');
+        return firstValueFrom(
+            this.http.get<{ [key: string]: string }>(this.namesUrl)
+                .pipe(
+                    tap(names => {
+                        this.astrologyNames = names;
+                        console.log('Astrology subject names map loaded successfully.');
+                    })
+                )
+        ).then(() => { }).catch(error => {
+            console.error('Failed to load astrology subject names map:', error);
+            this.astrologyNames = {};
         });
     }
 
@@ -121,5 +144,19 @@ export class AstrologyDataService {
     // Method to clear the data
     clearData() {
         this.astrologyDataSource.next(this.initialData);
+    }
+
+    // Added: Method to get an astrology subject's full name by symbol
+    async getAstrologySubjectName(symbol: string): Promise<string> {
+        await this.namesLoadedPromise;
+        const upperSymbol = symbol.toUpperCase();
+        if (this.astrologyNames && this.astrologyNames[upperSymbol]) {
+            const name = this.astrologyNames[upperSymbol];
+            console.log(`[Service] getAstrologySubjectName: Found name '${name}' for symbol '${symbol}'`);
+            return name;
+        } else {
+            console.warn(`[Service] getAstrologySubjectName: Name not found for symbol: ${symbol} (searched as ${upperSymbol}). Falling back to symbol.`);
+            return symbol;
+        }
     }
 }

@@ -38,15 +38,28 @@
     </div>
   </ng-container>
 
-
   <div class="ion-text-center ion-margin-top">
-    <strong>Point your device to the sky and<br>press the 'Find Constellation' button</strong>
+    <strong>Point your device to the sky and<br>press the 'Find Constellation' button
+      or select a constellation from the dropdown</strong>
+
   </div>
 
   <!-- Buttons Div -->
   <div class="ion-text-center ion-margin-top">
     <ion-button (click)="findConstellation()" expand="block">Find Constellation</ion-button>
   </div>
+
+  <!-- Constellation Dropdown (Moved Here) -->
+  <ion-item class="ion-margin-top">
+    <ion-label>Select Constellation:</ion-label>
+    <ion-select [(ngModel)]="selectedConstellationSymbol" (ionChange)="onConstellationChange($event)"
+      interface="popover" placeholder="Choose one">
+      <!-- Value is the symbol, display is the name -->
+      <ion-select-option *ngFor="let constellation of constellations" [value]="constellation.symbol">
+        {{ constellation.name }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
 
   <!-- Debug Info Box (Moved Here) -->
   <ion-card *ngIf="isTesting" class="ion-margin-top" color="light">
@@ -60,6 +73,14 @@
       <p>Altitude (beta): {{ currentAltitude?.toFixed(2) ?? 'N/A' }}</p>
       <p>Detected: {{ constellationData.name ?? 'N/A' }} </p>
       <p>Image: {{ constellationData.imagePath ?? 'N/A' }}</p>
+
+      <p>Constellations:</p>
+      <ion-list>
+        <ion-item *ngFor="let constellation of constellations">
+          <ion-label>{{ constellation.symbol }} - {{ constellation.name }}</ion-label>
+        </ion-item>
+      </ion-list>
+
     </ion-card-content>
   </ion-card>
 

@@ -16,7 +16,10 @@ import {
   GestureController,
   Gesture,
   IonFooter,
-  IonCardContent
+  IonCardContent,
+  IonList,
+  IonSelect,
+  IonSelectOption
 } from '@ionic/angular/standalone';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
@@ -29,6 +32,7 @@ import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { chevronForwardOutline } from 'ionicons/icons';
 import { AstrologyDataService, AstrologyData } from '../services/astrology-data.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-constellation',
@@ -39,7 +43,9 @@ import { AstrologyDataService, AstrologyData } from '../services/astrology-data.
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonButton, CommonModule, IonIcon, IonItem, IonLabel,
     IonCard, IonCardHeader, IonCardTitle,
-    IonFooter, IonCardContent
+    IonFooter, IonCardContent,
+    IonList, IonSelect, IonSelectOption,
+    FormsModule
   ],
 })
 export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
@@ -55,6 +61,16 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   private orientationListener: ((event: DeviceOrientationEvent) => void) | null = null;
   private orientationErrorDisplayed = false; // Flag to prevent multiple alerts
   private gesture?: Gesture;
+
+  // Dropdown properties
+  constellations: Array<{ symbol: string, name: string }> = []; // Changed to object array
+  selectedConstellationSymbol: string | null = null; // Renamed for clarity
+
+  // Data properties to hold fetched details (optional, could also just rely on service BehaviorSubjects)
+  myth: string | null = null;
+  mythLong: string | null = null;
+  astrology: string | null = null;
+  astrologyLong: string | null = null;
 
   // Expose the service observable to the template
   constellationData$ = this.constellationService.currentConstellationData;
@@ -72,8 +88,9 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     addIcons({ chevronForwardOutline });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.startOrientationListener();
+    await this.loadConstellationList();
   }
 
   ngAfterViewInit() {
@@ -221,10 +238,12 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
       const mythText = await this.constellationService.getMyth(constellation.symbol);
       const astrologyText = await this.astrologyService.getAstrology(constellation.symbol);
 
-      // Use constellation name for image path
-      let imageName = constellation.name.toLowerCase().replace(/\s+/g, '_'); // Ensure lowercase, replace spaces with underscores
-      imageName = imageName.replace('_', '-');
+      // Use constellation name for image path (Refined Logic)
+      const imageName = constellation.name.toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/[^a-z0-9-]/g, ''); // Remove other invalid chars
       const imagePath = `assets/constellations/${imageName}-ann.jpg`;
+      console.log(`findConstellation derived image path '${imagePath}' from name '${constellation.name}'`);
 
       // Update shared service
       const data: ConstellationData = {
@@ -342,4 +361,108 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     console.log('Forward icon clicked, navigating to Myth page');
     this.router.navigateByUrl('/tabs/myth', { replaceUrl: true });
   }
+
+  async loadConstellationList() {
+    try {
+      // Use getConstellationList which returns Array<{ symbol: string, name: string }>
+      this.constellations = await this.constellationService.getConstellationList();
+
+      console.log('Loaded constellation list (symbol/name):', this.constellations);
+      // --- DEBUGGING: Log the received list in component ---
+      console.log('[Component] loadConstellationList received:', JSON.stringify(this.constellations.slice(0, 5)) + '...');
+      // --- END DEBUGGING ---
+    } catch (error) {
+      console.error('Error loading constellation list:', error);
+      this.presentErrorAlert('Error', 'Could not load constellation list.');
+    }
+  }
+
+  async onConstellationChange(event: any) {
+    const symbol = event.detail.value; // The value is the symbol
+    if (!symbol) return;
+
+    console.log(`Constellation selected: ${symbol}`);
+    this.selectedConstellationSymbol = symbol;
+
+    // Update the services with the selected constellation's data
+    try {
+      // Clear previous data if desired, or let update handle it
+      // this.constellationService.clearData();
+      // this.astrologyService.clearData();
+
+      // Get the full name using the new service method
+      const name = await this.constellationService.getConstellationName(symbol);
+      // Also get astrology name (might be the same, but use the specific service method)
+      const astrologyName = await this.astrologyService.getAstrologySubjectName(symbol);
+
+      // Image path derived from name (or symbol if name lookup fails)
+      const imagePath = this.getImagePathFromName(name); // Use helper for image path
+
+      const [mythText, mythLongText, astrologyText, astrologyLongText] = await Promise.all([
+        this.constellationService.getMyth(symbol),
+        this.constellationService.getMythLong(symbol),
+        this.astrologyService.getAstrology(symbol),
+        this.astrologyService.getAstrologyLong(symbol)
+      ]);
+
+      this.myth = mythText;
+      this.mythLong = mythLongText;
+      this.astrology = astrologyText;
+      this.astrologyLong = astrologyLongText;
+
+      // Update the services using the fetched/looked-up name
+      const data: ConstellationData = {
+        name: name, // Use looked-up name
+        symbol: symbol,
+        myth: mythText,
+        mythLong: mythLongText,
+        imagePath: imagePath // Use derived image path
+      };
+      const dataAstrology: AstrologyData = {
+        name: astrologyName, // Use looked-up name for astrology context
+        symbol: symbol,
+        astrology: astrologyText,
+        astrologyLong: astrologyLongText,
+        imagePath: imagePath // Use the same image path
+      };
+
+      // --- DEBUGGING: Log data being sent to services ---
+      console.log('[Dropdown Change] Updating Constellation Service with:', data);
+      console.log('[Dropdown Change] Updating Astrology Service with:', dataAstrology);
+      // --- END DEBUGGING ---
+
+      this.constellationService.updateConstellationData(data);
+      this.astrologyService.updateAstrologyData(dataAstrology);
+
+    } catch (error) {
+      console.error(`Error fetching details for ${symbol}:`, error);
+      this.presentErrorAlert('Error', `Could not fetch details for ${symbol}.`);
+      // Optionally clear data on error
+      this.constellationService.clearData();
+      this.astrologyService.clearData();
+      this.myth = null;
+      this.mythLong = null;
+      this.astrology = null;
+      this.astrologyLong = null;
+    }
+  }
+
+  // Helper function to get image path from name (Refined)
+  getImagePathFromName(name: string): string {
+    // Derive image path
+    const imageName = name.toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces directly with hyphens
+      .replace(/[^a-z0-9-]/g, ''); // Remove any other non-alphanumeric characters except hyphens
+    const imagePath = `assets/constellations/${imageName}-ann.jpg`;
+    console.log(`getImagePathFromName derived image path '${imagePath}' from name '${name}'`);
+    return imagePath;
+  }
+
+  /* // Helper function to get constellation name and image path from symbol (No longer needed directly)
+    getConstellationDetailsFromName(symbol: string): { name: string, imagePath: string } {
+    // ... (commented out code remains here)
+    return { name: name, imagePath: imagePath };
+  }
+  */
+
 }
