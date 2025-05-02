@@ -40,7 +40,7 @@
 
   <div class="ion-text-center ion-margin-top">
     <strong>Point your device to the sky and<br>press the 'Find Constellation' button
-      or select a constellation from the dropdown</strong>
+      <br>- or -<br>select a constellation from the dropdown</strong>
 
   </div>
 
@@ -51,9 +51,9 @@
 
   <!-- Constellation Dropdown (Moved Here) -->
   <ion-item class="ion-margin-top">
-    <ion-label>Select Constellation:</ion-label>
+    <ion-label>Celestial Selection...:</ion-label>
     <ion-select [(ngModel)]="selectedConstellationSymbol" (ionChange)="onConstellationChange($event)"
-      interface="popover" placeholder="Choose one">
+      interface="popover" placeholder="Constellation">
       <!-- Value is the symbol, display is the name -->
       <ion-select-option *ngFor="let constellation of constellations" [value]="constellation.symbol">
         {{ constellation.name }}
@@ -61,8 +61,9 @@
     </ion-select>
   </ion-item>
 
-  <!-- Debug Info Box (Moved Here) -->
+  <br><br><br><br><br><br><br><br>
   <ion-card *ngIf="isTesting" class="ion-margin-top" color="light">
+
     <ion-card-header>
       <ion-card-title>Debug Info</ion-card-title>
     </ion-card-header>
@@ -74,12 +75,12 @@
       <p>Detected: {{ constellationData.name ?? 'N/A' }} </p>
       <p>Image: {{ constellationData.imagePath ?? 'N/A' }}</p>
 
-      <p>Constellations:</p>
+      <!-- <p>Constellations:</p>
       <ion-list>
         <ion-item *ngFor="let constellation of constellations">
           <ion-label>{{ constellation.symbol }} - {{ constellation.name }}</ion-label>
         </ion-item>
-      </ion-list>
+      </ion-list> -->
 
     </ion-card-content>
   </ion-card>

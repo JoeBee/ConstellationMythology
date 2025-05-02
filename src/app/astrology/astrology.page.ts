@@ -129,6 +129,10 @@ export class AstrologyPage implements OnInit, OnDestroy, AfterViewInit {
         await this.speakText(this.currentAstrologyLong, 'Full Story Narration');
     }
 
+    stopReading() {
+        TextToSpeech.stop();
+    }
+
     private async speakText(text: string, logContext: string) {
         try {
             await TextToSpeech.speak({

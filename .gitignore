@@ -82,3 +82,5 @@ Thumbs.db
 /android/app/src/main
 /android/app/src/main/res
 /android/app/src/main/res/drawable-land-night-hdpi
+ios/
+android/

@@ -128,6 +128,10 @@ export class MythPage implements OnInit, OnDestroy, AfterViewInit {
     await this.speakText(this.currentMythLong, 'Full Story Narration');
   }
 
+  stopReading() {
+    TextToSpeech.stop();
+  }
+
   private async speakText(text: string, logContext: string) {
     try {
       await TextToSpeech.speak({

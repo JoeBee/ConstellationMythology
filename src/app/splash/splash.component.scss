@@ -1,0 +1,52 @@
+.splash-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000000;
+    z-index: 1000;
+    opacity: 1;
+}
+
+.splash-content {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    ion-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .text-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        width: 100%;
+    }
+
+    h1,
+    h2 {
+        position: relative;
+        z-index: 1;
+        color: #ffffff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    h1 {
+        font-size: 32px;
+        margin: 0;
+        font-weight: 500;
+    }
+}

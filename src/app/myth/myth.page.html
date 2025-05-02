@@ -22,35 +22,48 @@
   </ion-header>
 
 
-  <!-- Display Constellation Data if available -->
+
   <div *ngIf="hasValidData; else noData" style="display: flex; flex-direction: column; align-items: center;">
-    <!-- Use async pipe to get constellation data -->
+
     <ng-container *ngIf="constellationData$ | async as constellationData">
-      <!-- Buttons container -->
-      <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
-        <!-- Button for Short Myth Narration (pass data if needed, or keep as is if component handles it) -->
+
+
+      <!-- --- -->
+      <div
+        style="width: 100%; display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+
         <ion-button style="background-color: lightblue" (click)="narrateMythShort()" fill="clear"
           aria-label="Narrate short myth">
           <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-          <!-- <span style="font-size: 0.8em; margin-left: 4px;">Short</span> -->
         </ion-button>
 
-        <!-- Button for Long Myth Narration (pass data if needed, or keep as is)-->
         <ion-button style="background-color: lightgreen" (click)="narrateMythLong()" fill="clear"
           aria-label="Narrate full story">
           <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-          <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Myth</span>
+          <span style="font-size: 0.8em; margin-left: auto; width: 150px;">Myth</span>
         </ion-button>
-      </div>
 
-      <!-- Original Card for Short Myth -->
+        <ion-button style="background-color: red" (click)="stopReading()" fill="clear" aria-label="Stop">
+          <!-- <ion-icon slot="icon-only" name="stop" style="color: red;"></ion-icon> -->
+          <ion-icon slot="icon-only" name="square" style="color: rgb(60, 255, 0); font-size: 2em;"></ion-icon>
+
+
+        </ion-button>
+
+        <ion-button style="background-color: red" (click)="stopReading()" fill="clear" aria-label="Stop">
+          <ion-icon slot="icon-only" name="radio-button-on"
+            style="color: rgb(55, 0, 255); font-size: 2em; border-radius: 0;"></ion-icon>
+        </ion-button>
+
+      </div>
+      <!-- --- -->
+
+
       <ion-card style="width: 90%; max-width: 600px;">
         <ion-card-header>
-          <!-- Use name from async pipe -->
           <ion-card-title>{{ constellationData?.name }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <!-- Use myth from async pipe -->
           <p>{{ constellationData?.myth }}</p>
         </ion-card-content>
       </ion-card>
@@ -64,7 +77,7 @@
 
   </div>
 
-  <!-- Template to show if no data -->
+
   <ng-template #noData>
     <div class="ion-text-center ion-padding">
       <p class="info-text">Go to the Constellation tab and identify a constellation first.</p>

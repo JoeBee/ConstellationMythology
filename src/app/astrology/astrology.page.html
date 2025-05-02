@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-title>
-            Heavenly Astrology
+            Stellar Wisdom
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -18,47 +18,69 @@
     </ion-header>
 
 
-    <!-- Display Constellation Data if available -->
     <div *ngIf="hasValidData; else noData" style="display: flex; flex-direction: column; align-items: center;">
-        <!-- Use async pipe to get constellation data -->
+
         <ng-container *ngIf="astrologyData$ | async as astrologyData">
-            <!-- Buttons container -->
-            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
-                <!-- Button for Short Astrology Narration (pass data if needed, or keep as is if component handles it) -->
+
+            <!-- --- -->
+            <!-- <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
                 <ion-button style="background-color: lightblue" (click)="narrateAstrologyShort()" fill="clear"
                     aria-label="Narrate short Astrology">
                     <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-                    <!-- <span style="font-size: 0.8em; margin-left: 4px;">Short</span> -->
                 </ion-button>
 
-                <!-- Button for Long Astrology Narration (pass data if needed, or keep as is)-->
                 <ion-button style="background-color: lightgreen" (click)="narrateAstrologyLong()" fill="clear"
                     aria-label="Narrate full story">
                     <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
                     <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Astrology</span>
                 </ion-button>
-            </div>
+            </div> -->
 
-            <!-- Original Card for Short Astrology -->
+            <div
+                style="width: 100%; display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+
+                <ion-button style="background-color: lightblue" (click)="narrateAstrologyShort()" fill="clear"
+                    aria-label="Narrate short Astrology">
+                    <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button style="background-color: lightgreen" (click)="narrateAstrologyLong()" fill="clear"
+                    aria-label="Narrate full story">
+                    <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
+                    <span style="font-size: 0.8em; margin-left: auto; width: 150px;">Astrology</span>
+                </ion-button>
+
+                <ion-button style="background-color: red" (click)="stopReading()" fill="clear" aria-label="Stop">
+                    <ion-icon slot="icon-only" name="stop" style="color: red;"></ion-icon>
+                    <span style="font-size: 0.8em; margin-left: auto; width: 40px;"></span>
+                </ion-button>
+
+            </div>
+            <!-- --- -->
+
+
             <ion-card style="width: 90%; max-width: 600px;">
                 <ion-card-header>
-                    <!-- Use name from async pipe -->
                     <ion-card-title>{{ astrologyData?.name }}</ion-card-title>
                 </ion-card-header>
                 <ion-card-content>
-                    <!-- Use Astrology from async pipe -->
+
                     <p>{{ astrologyData?.astrology }}</p>
                 </ion-card-content>
             </ion-card>
+
+            <ion-card style="width: 90%; max-width: 600px;" *ngIf="currentAstrologyLong">
+                <ion-card-content>
+                    <p>{{ currentAstrologyLong }}</p>
+                </ion-card-content>
+            </ion-card>
+
         </ng-container>
 
-        <ion-card style="width: 90%; max-width: 600px;" *ngIf="currentAstrologyLong">
-            <ion-card-content>
-                <p>{{ currentAstrologyLong }}</p>
-            </ion-card-content>
-        </ion-card>
+
 
     </div>
+
 
     <!-- Template to show if no data -->
     <ng-template #noData>
