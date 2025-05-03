@@ -16,18 +16,30 @@ export class SplashComponent implements OnInit {
     constructor(private animationCtrl: AnimationController) { }
 
     ngOnInit() {
-        // Hide the splash screen after 3 seconds
+        // First fade out the text after 3 seconds
         setTimeout(() => {
-            // Create fade-out animation
-            const fadeAnimation = this.animationCtrl.create()
+            // Create text fade-out animation
+            const textFadeAnimation = this.animationCtrl.create()
+                .addElement(document.querySelector('.text-overlay')!)
+                .duration(800)
+                .fromTo('opacity', '1', '0');
+
+            // Play the text animation
+            textFadeAnimation.play();
+        }, 3000);
+
+        // Hide the splash screen after 5 seconds
+        setTimeout(() => {
+            // Create fade-out animation for the whole splash
+            const splashFadeAnimation = this.animationCtrl.create()
                 .addElement(document.querySelector('.splash-container')!)
                 .duration(800)
                 .fromTo('opacity', '1', '0');
 
             // Play the animation
-            fadeAnimation.play().then(() => {
+            splashFadeAnimation.play().then(() => {
                 this.showSplash = false;
             });
-        }, 3000);
+        }, 5000);
     }
 } 

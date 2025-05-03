@@ -19,7 +19,8 @@ import {
   IonCardContent,
   IonList,
   IonSelect,
-  IonSelectOption
+  IonSelectOption,
+  IonButtons
 } from '@ionic/angular/standalone';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
@@ -30,7 +31,7 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { ConstellationDataService, ConstellationData } from '../services/constellation-data.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { chevronForwardOutline } from 'ionicons/icons';
+import { chevronForwardOutline, trashOutline } from 'ionicons/icons';
 import { AstrologyDataService, AstrologyData } from '../services/astrology-data.service';
 import { FormsModule } from '@angular/forms';
 
@@ -45,7 +46,8 @@ import { FormsModule } from '@angular/forms';
     IonCard, IonCardHeader, IonCardTitle,
     IonFooter, IonCardContent,
     IonList, IonSelect, IonSelectOption,
-    FormsModule
+    FormsModule,
+    IonButtons
   ],
 })
 export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
@@ -85,7 +87,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     private gestureCtrl: GestureController,
     private elementRef: ElementRef
   ) {
-    addIcons({ chevronForwardOutline });
+    addIcons({ trashOutline, chevronForwardOutline });
   }
 
   async ngOnInit() {
@@ -464,5 +466,37 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     return { name: name, imagePath: imagePath };
   }
   */
+
+  // Add the clearData method here
+  clearData() {
+    console.log('Clearing all data...');
+    // Reset constellation data (using default/initial state)
+    this.constellationService.updateConstellationData({
+      name: 'Unknown', // Or null/undefined depending on service logic
+      symbol: '',
+      myth: '',
+      imagePath: null
+    });
+
+    // Reset astrology data (using default/initial state)
+    this.astrologyService.updateAstrologyData({
+      name: 'Unknown', // Or null/undefined
+      symbol: '',
+      astrology: '',
+      imagePath: null
+    });
+
+    // Reset the dropdown selection
+    this.selectedConstellationSymbol = null;
+
+    // Optionally reset location/orientation if needed
+    // this.currentLatitude = null;
+    // this.currentLongitude = null;
+    // this.currentAzimuth = null;
+    // this.currentAltitude = null;
+
+    // Optionally, provide user feedback (e.g., a toast message)
+    // this.presentToast('Data cleared successfully.');
+  }
 
 }

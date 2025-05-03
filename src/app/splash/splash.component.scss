@@ -19,8 +19,8 @@
     position: relative;
 
     ion-img {
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         object-fit: cover;
         position: absolute;
         top: 0;
@@ -33,20 +33,57 @@
         left: 50%;
         transform: translate(-50%, -50%);
         z-index: 1;
-        width: 100%;
+        width: 90%;
+        opacity: 1;
     }
 
     h1,
     h2 {
         position: relative;
         z-index: 1;
-        color: #ffffff;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        animation: colorChange 3s ease-in-out infinite;
     }
 
     h1 {
         font-size: 32px;
         margin: 0;
         font-weight: 500;
+    }
+
+    h2 {
+        animation-delay: 0.5s;
+    }
+}
+
+@keyframes colorChange {
+    0% {
+        color: #ff8a00;
+        /* Orange */
+    }
+
+    20% {
+        color: #e8d21d;
+        /* Yellow */
+    }
+
+    40% {
+        color: #50c878;
+        /* Emerald */
+    }
+
+    60% {
+        color: #00bfff;
+        /* Deep Sky Blue */
+    }
+
+    80% {
+        color: #a020f0;
+        /* Purple */
+    }
+
+    100% {
+        color: #ff8a00;
+        /* Back to Orange */
     }
 }

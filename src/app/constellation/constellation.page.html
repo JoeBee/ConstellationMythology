@@ -8,6 +8,13 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
 
+  <!-- Moved ion-buttons here with fixed positioning -->
+  <ion-buttons slot="fixed" style="top: 10px; right: 10px; z-index: 10;">
+    <ion-button (click)="clearData()">
+      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+
   <!-- Swipe Right Indicator -->
   <ion-icon name="chevron-forward-outline" class="swipe-indicator swipe-indicator-right"
     (click)="navigateToMyth()"></ion-icon>
@@ -16,7 +23,7 @@
   <ng-container *ngIf="constellationData$ | async as constellationData">
     <ion-card
       *ngIf="constellationData.name && constellationData.name !== 'Unknown' && !constellationData.name.startsWith('Error:')"
-      class="ion-margin-top">
+      class="ion-margin-top" style="margin-top: 50px;">
       <img *ngIf="constellationData.imagePath" [src]="constellationData.imagePath"
         alt="{{ constellationData.name }} Image" />
 
@@ -29,8 +36,7 @@
       *ngIf="!constellationData.name || constellationData.name === 'Unknown' || constellationData.name.startsWith('Error:')"
       class="ion-text-center ion-margin-top">
       <p>{{ constellationData.name?.startsWith('Error:') ?
-        'Could not determine constellation.' :
-        'Point your device to the sky and press the button.'
+        'Could not determine constellation.' : ''
         }}
       </p>
       <!-- Show specific error message -->
@@ -39,22 +45,21 @@
   </ng-container>
 
   <div class="ion-text-center ion-margin-top">
-    <strong>Point your device to the sky and<br>press the 'Find Constellation' button
+    <strong>Point your phone at the sky and<br>press the 'Find Constellation' button
       <br>- or -<br>select a constellation from the dropdown</strong>
 
   </div>
 
-  <!-- Buttons Div -->
+  <br><br>
   <div class="ion-text-center ion-margin-top">
     <ion-button (click)="findConstellation()" expand="block">Find Constellation</ion-button>
   </div>
+  <br><br>
 
-  <!-- Constellation Dropdown (Moved Here) -->
   <ion-item class="ion-margin-top">
     <ion-label>Celestial Selection...:</ion-label>
     <ion-select [(ngModel)]="selectedConstellationSymbol" (ionChange)="onConstellationChange($event)"
       interface="popover" placeholder="Constellation">
-      <!-- Value is the symbol, display is the name -->
       <ion-select-option *ngFor="let constellation of constellations" [value]="constellation.symbol">
         {{ constellation.name }}
       </ion-select-option>
@@ -87,8 +92,7 @@
 
 </ion-content>
 
-<!-- ADD FOOTER AND ITEM HERE -->
-<ion-footer class="ion-no-border">
+<!-- <ion-footer class="ion-no-border">
   <ion-toolbar>
     <ion-item lines="none">
       <ion-label class="ion-text-center">
@@ -96,4 +100,4 @@
       </ion-label>
     </ion-item>
   </ion-toolbar>
-</ion-footer>
+</ion-footer> -->

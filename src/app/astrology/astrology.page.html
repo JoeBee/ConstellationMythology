@@ -22,19 +22,6 @@
 
         <ng-container *ngIf="astrologyData$ | async as astrologyData">
 
-            <!-- --- -->
-            <!-- <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
-                <ion-button style="background-color: lightblue" (click)="narrateAstrologyShort()" fill="clear"
-                    aria-label="Narrate short Astrology">
-                    <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-                </ion-button>
-
-                <ion-button style="background-color: lightgreen" (click)="narrateAstrologyLong()" fill="clear"
-                    aria-label="Narrate full story">
-                    <ion-icon slot="icon-only" name="mic-outline"></ion-icon>
-                    <span style="font-size: 0.8em; margin-left: auto; width: 200px;">Astrology</span>
-                </ion-button>
-            </div> -->
 
             <div
                 style="width: 100%; display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
@@ -50,10 +37,16 @@
                     <span style="font-size: 0.8em; margin-left: auto; width: 150px;">Astrology</span>
                 </ion-button>
 
-                <ion-button style="background-color: red" (click)="stopReading()" fill="clear" aria-label="Stop">
+                <ion-button style="background-color: red; display: flex; justify-content: center; align-items: center;"
+                    (click)="stopReading()" fill="clear" aria-label="Stop">
+                    <ion-icon slot="icon-only" name="square" style="color: lightsalmon; font-size: 2em;"></ion-icon>
+                </ion-button>
+
+
+                <!-- <ion-button style="background-color: red" (click)="stopReading()" fill="clear" aria-label="Stop">
                     <ion-icon slot="icon-only" name="stop" style="color: red;"></ion-icon>
                     <span style="font-size: 0.8em; margin-left: auto; width: 40px;"></span>
-                </ion-button>
+                </ion-button> -->
 
             </div>
             <!-- --- -->
