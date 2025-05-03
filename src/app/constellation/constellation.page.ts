@@ -34,7 +34,7 @@ import { addIcons } from 'ionicons';
 import { chevronForwardOutline, trashOutline, refreshOutline } from 'ionicons/icons';
 import { AstrologyDataService, AstrologyData } from '../services/astrology-data.service';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -59,7 +59,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
 
   private dataSubscription!: Subscription;
 
-  isTesting: boolean = true; // Added for debugging
+  isTesting: boolean = false; // Added for debugging
   currentLatitude: number | null = null;
   currentLongitude: number | null = null;
   // Removed: currentConstellationName: string | null = 'Unknown';
@@ -70,6 +70,16 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   private orientationListener: ((event: DeviceOrientationEvent) => void) | null = null;
   private orientationErrorDisplayed = false; // Flag to prevent multiple alerts
   private gesture?: Gesture;
+
+  // Add a subject to track the current pointing constellation
+  private pointingConstellationSubject = new BehaviorSubject<string>('Unknown');
+  pointingConstellation$ = this.pointingConstellationSubject.asObservable();
+  private orientationUpdateTimer: any;
+  private isMoving = false;
+  private lastAzimuth: number | null = null;
+  private lastAltitude: number | null = null;
+  private motionCheckTimer: any;
+  private motionThreshold = 1.5; // degrees of movement to consider "moving"
 
   // Dropdown properties
   constellations: Array<{ symbol: string, name: string }> = []; // Changed to object array
@@ -100,6 +110,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   async ngOnInit() {
     this.startOrientationListener();
     await this.loadConstellationList();
+    this.startOrientationUpdates();
   }
 
   ngAfterViewInit() {
@@ -126,6 +137,12 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }
+    if (this.orientationUpdateTimer) {
+      clearInterval(this.orientationUpdateTimer);
+    }
+    if (this.motionCheckTimer) {
+      clearTimeout(this.motionCheckTimer);
+    }
   }
 
   startOrientationListener() {
@@ -145,6 +162,10 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
         if (event.absolute === true || event.absolute === null) { // Treat null as potentially absolute
           this.currentAzimuth = event.alpha;
           this.currentAltitude = event.beta; // Using beta as altitude proxy
+
+          // Check if device is moving
+          this.checkDeviceMotion();
+
           // Optional: Add console logging to debug values
           // console.log(`Orientation - Alpha: ${event.alpha?.toFixed(2)}, Beta: ${event.beta?.toFixed(2)}, Gamma: ${event.gamma?.toFixed(2)}`);
         } else {
@@ -169,6 +190,10 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
             this.orientationListener = (event: DeviceOrientationEvent) => {
               this.currentAzimuth = event.alpha;
               this.currentAltitude = event.beta;
+
+              // Check if device is moving
+              this.checkDeviceMotion();
+
               // console.log(`iOS Orientation - Alpha: ${event.alpha?.toFixed(2)}, Beta: ${event.beta?.toFixed(2)}, Gamma: ${event.gamma?.toFixed(2)}`);
             };
             // On iOS, 'deviceorientation' is typically absolute
@@ -328,30 +353,6 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // async narrateMythShort() {
-  //   // Get current data from the service
-  //   const currentData = this.constellationService.getCurrentData();
-  //   // Myth should already be loaded into the service's current data by findConstellation
-  //   const mythToNarrate = currentData.myth;
-
-  //   if (!mythToNarrate || mythToNarrate.startsWith('No myth found')) {
-  //     await this.presentErrorAlert('Narration Error', 'Myth text not available to narrate.');
-  //     return;
-  //   }
-  //   console.log(`Narrating myth for: ${currentData.name}`);
-  //   try {
-  //     await TextToSpeech.speak({
-  //       text: mythToNarrate,
-  //       lang: 'en-US', rate: 1.0, pitch: 1.0, volume: 1.0, category: 'ambient'
-  //     });
-  //     console.log('TTS started successfully.');
-  //   } catch (error) {
-  //     console.error('Error starting TTS:', error);
-  //     let errorMessage = 'Could not start text-to-speech.';
-  //     if (error instanceof Error) { errorMessage = error.message; }
-  //     await this.presentErrorAlert('TTS Error', errorMessage);
-  //   }
-  // }
 
   // Helper method to present error alerts
   async presentErrorAlert(header: string, message: string) {
@@ -521,6 +522,117 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
 
     // Optionally, provide user feedback (e.g., a toast message)
     // this.presentToast('Data cleared successfully.');
+  }
+
+  // Add a method to start periodic updates of the pointing constellation
+  startOrientationUpdates() {
+    // Clear any existing timer
+    if (this.orientationUpdateTimer) {
+      clearInterval(this.orientationUpdateTimer);
+    }
+
+    // Update pointing constellation every 2 seconds
+    this.orientationUpdateTimer = setInterval(async () => {
+      await this.updatePointingConstellation();
+    }, 2000);
+
+    // Initial update
+    this.updatePointingConstellation();
+  }
+
+  // Method to determine the current constellation without affecting the main UI
+  async updatePointingConstellation() {
+    // Skip if orientation data is not available
+    if (this.currentAzimuth === null || this.currentAltitude === null) {
+      this.pointingConstellationSubject.next('Unknown');
+      return;
+    }
+
+    // Skip update if the device is currently moving
+    if (this.isMoving) {
+      return;
+    }
+
+    try {
+      // Get current position
+      let position: Position;
+      try {
+        position = await this.getCurrentPosition();
+      } catch (error) {
+        console.error('Error getting position for pointing update:', error);
+        this.pointingConstellationSubject.next('Location unavailable');
+        return;
+      }
+
+      const currentTime = new Date();
+      const deviceAzimuth = this.currentAzimuth!;
+      let deviceAltitude = Math.max(-90, Math.min(90, this.currentAltitude!));
+
+      // This is similar to the findConstellation method but without updating the main constellation data
+      // Calculate the celestial coordinates (right ascension and declination)
+      const observer = new Astronomy.Observer(position.coords.latitude, position.coords.longitude, 0);
+      const horSphere = new Astronomy.Spherical(deviceAltitude, deviceAzimuth, 1);
+      const horVector = Astronomy.VectorFromHorizon(horSphere, currentTime, '');
+      const rotMatrix = Astronomy.Rotation_HOR_EQJ(currentTime, observer);
+      const eqjVector = Astronomy.RotateVector(rotMatrix, horVector);
+      const eqCoords = Astronomy.EquatorFromVector(eqjVector);
+
+      // Now find which constellation contains these coordinates
+      const constellation = Astronomy.Constellation(eqCoords.ra, eqCoords.dec);
+
+      // Find the constellation name from our list or use the one from astronomy-engine
+      const constellationName = constellation.name || 'Unknown';
+
+      // Update the pointing constellation subject
+      this.pointingConstellationSubject.next(constellationName);
+    } catch (error) {
+      console.error('Error updating pointing constellation:', error);
+      this.pointingConstellationSubject.next('Error');
+    }
+  }
+
+  checkDeviceMotion() {
+    if (this.currentAzimuth === null || this.currentAltitude === null) {
+      return;
+    }
+
+    // Initialize last values if not already set
+    if (this.lastAzimuth === null || this.lastAltitude === null) {
+      this.lastAzimuth = this.currentAzimuth;
+      this.lastAltitude = this.currentAltitude;
+      return;
+    }
+
+    // Calculate the difference in movement
+    const azimuthDiff = Math.abs(this.currentAzimuth - this.lastAzimuth);
+    const altitudeDiff = Math.abs(this.currentAltitude - this.lastAltitude);
+
+    // If the device has moved more than the threshold, mark as moving
+    if (azimuthDiff > this.motionThreshold || altitudeDiff > this.motionThreshold) {
+      if (!this.isMoving) {
+        this.isMoving = true;
+        this.pointingConstellationSubject.next('...seeking');
+      }
+
+      // Update last values for next check
+      this.lastAzimuth = this.currentAzimuth;
+      this.lastAltitude = this.currentAltitude;
+
+      // Start a timer to reset moving state after 1 second of no updates
+      if (this.motionCheckTimer) {
+        clearTimeout(this.motionCheckTimer);
+      }
+
+      this.motionCheckTimer = setTimeout(() => {
+        this.isMoving = false;
+        // Force an update of the constellation
+        this.updatePointingConstellation();
+      }, 1000);
+    } else {
+      // Update last values even when not moving significantly
+      this.lastAzimuth = this.currentAzimuth;
+      this.lastAltitude = this.currentAltitude;
+    }
   }
 
 }

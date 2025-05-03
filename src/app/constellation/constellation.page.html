@@ -6,6 +6,14 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- Current pointing constellation display -->
+<div class="pointing-display ion-text-center ion-padding-vertical">
+  <div class="pointing-label">Currently pointing at:&nbsp;&nbsp;&nbsp;</div>
+  <div class="pointing-constellation" [class.seeking]="(pointingConstellation$ | async) === 'seeking...'">
+    {{ pointingConstellation$ | async }}
+  </div>
+</div>
+
 <ion-content [fullscreen]="true" class="ion-padding">
 
   <!-- Moved ion-buttons here with fixed positioning -->
