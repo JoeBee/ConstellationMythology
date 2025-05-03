@@ -1,0 +1,37 @@
+ion-content {
+    --background: url('/assets/DreamyClouds.gif') no-repeat center center / cover;
+}
+
+/* Style the radio items for better readability */
+ion-item {
+    --background: rgba(var(--ion-color-step-100-rgb, 255, 255, 255), 0.8);
+    --border-radius: 8px;
+    margin-bottom: 5px;
+
+    ion-radio {
+        /* Style the radio button circle itself */
+        --color-checked: var(--ion-color-primary);
+        margin-right: 8px; // Add space between radio and icon/label
+    }
+
+    /* Target the text part of the radio label specifically */
+    ion-label,
+    .radio-text-label {
+        // Add a class for more specific targeting if needed
+        color: var(--ion-color-step-850, #262626); // Darker text color
+        font-weight: 500;
+    }
+}
+
+ion-card {
+    --background: rgba(var(--ion-color-step-150-rgb, 242, 242, 242), 0.9);
+}
+
+/* Style for the new collapse button */
+.collapse-button {
+    margin-left: auto; // Push the button to the right of the header
+
+    ion-icon {
+        color: var(--ion-color-step-600, #666666); // Make chevron icon darker
+    }
+}

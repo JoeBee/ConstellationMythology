@@ -1,0 +1,80 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Celestial Guidance</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Celestial Guidance</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Section Header with Collapse Toggle -->
+  <ion-list-header>
+    <ion-label>{{ selectedZodiac ? selectedZodiac : 'Choose Your Zodiac Sign' }}</ion-label>
+    <ion-button fill="clear" size="small" (click)="toggleZodiacSelection()" class="collapse-button">
+      <ion-icon slot="icon-only"
+        [name]="showZodiacSelection ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+    </ion-button>
+  </ion-list-header>
+
+  <!-- Container for Zodiac Selection (Collapsible) -->
+  <div *ngIf="showZodiacSelection">
+    <ion-radio-group [value]="selectedZodiac" (ionChange)="zodiacChanged($event)">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" *ngFor="let sign of zodiacSigns">
+            <ion-item lines="none">
+              <ion-radio [value]="sign.name" labelPlacement="start">
+                <!-- Use labelPlacement="start" and put icon/text manually after -->
+                <ion-icon [src]="sign.icon" aria-hidden="true" slot="start" size="small"></ion-icon>
+                <span class="radio-text-label">{{ sign.name }}</span> <!-- Apply class for styling -->
+              </ion-radio>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-radio-group>
+  </div>
+
+  <!-- Buttons Container -->
+  <div class="ion-padding-top ion-text-center">
+    <ion-button (click)="getGuidance()" [disabled]="!selectedZodiac || isLoading">
+      <ion-spinner *ngIf="isLoading" name="dots" slot="start"></ion-spinner>
+      Celestial Guidance
+    </ion-button>
+
+    <!-- Removed the old 'Change Sign' button -->
+  </div>
+
+  <!-- Guidance Display Card -->
+  <ion-card *ngIf="horoscope">
+    <ion-card-header>
+      <ion-card-title>Your Guidance</ion-card-title>
+      <!-- Add Narration Buttons -->
+      <div style="display: flex; justify-content: flex-end; gap: 5px;">
+        <ion-button fill="clear" size="small" (click)="narrateGuidance()" aria-label="Narrate guidance">
+          <ion-icon slot="icon-only" name="mic-outline" color="primary"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" size="small" (click)="stopReading()" aria-label="Stop narration">
+          <ion-icon slot="icon-only" name="square-outline" color="danger"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-card-header>
+    <ion-card-content>
+      <p style="white-space: pre-wrap;">{{ horoscope }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="horoscopeError">
+    <ion-card-header>
+      <ion-card-title color="danger">Error</ion-card-title>
+    </ion-card-header>
+    <ion-card-content color="danger">
+      {{ horoscopeError }}
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

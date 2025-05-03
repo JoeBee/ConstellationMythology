@@ -22,6 +22,11 @@ export const routes: Routes = [
           import('../astrology/astrology.page').then((m) => m.AstrologyPage),
       },
       {
+        path: 'heavenly-guidance',
+        loadComponent: () =>
+          import('../heavenly-guidance/heavenly-guidance.page').then((m) => m.HeavenlyGuidancePage),
+      },
+      {
         path: '',
         redirectTo: '/tabs/constellation',
         pathMatch: 'full',
