@@ -11,7 +11,7 @@
   <!-- Moved ion-buttons here with fixed positioning -->
   <ion-buttons slot="fixed" style="top: 10px; right: 10px; z-index: 10;">
     <ion-button (click)="clearData()">
-      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
     </ion-button>
   </ion-buttons>
 
@@ -24,8 +24,17 @@
     <ion-card
       *ngIf="constellationData.name && constellationData.name !== 'Unknown' && !constellationData.name.startsWith('Error:')"
       class="ion-margin-top" style="margin-top: 50px;">
-      <img *ngIf="constellationData.imagePath" [src]="constellationData.imagePath"
-        alt="{{ constellationData.name }} Image" />
+
+      <!-- Use swiper-container for zooming -->
+      <swiper-container [zoom]="true" #zoomSlides>
+        <swiper-slide>
+          <div class="swiper-zoom-container">
+            <img *ngIf="constellationData.imagePath" [src]="constellationData.imagePath"
+              alt="{{ constellationData.name }} Image" />
+          </div>
+        </swiper-slide>
+      </swiper-container>
+      <!-- Original ion-slides removed -->
 
       <ion-card-header>
         <ion-card-title>{{ constellationData.name }}</ion-card-title>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -31,9 +31,11 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { ConstellationDataService, ConstellationData } from '../services/constellation-data.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { chevronForwardOutline, trashOutline } from 'ionicons/icons';
+import { chevronForwardOutline, trashOutline, refreshOutline } from 'ionicons/icons';
 import { AstrologyDataService, AstrologyData } from '../services/astrology-data.service';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-constellation',
@@ -49,9 +51,14 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     IonButtons
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
+  @ViewChild('zoomSlides') swiperContainerRef!: ElementRef<HTMLElement>;
+
+  private dataSubscription!: Subscription;
+
   isTesting: boolean = true; // Added for debugging
   currentLatitude: number | null = null;
   currentLongitude: number | null = null;
@@ -87,7 +94,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     private gestureCtrl: GestureController,
     private elementRef: ElementRef
   ) {
-    addIcons({ trashOutline, chevronForwardOutline });
+    addIcons({ trashOutline, chevronForwardOutline, refreshOutline });
   }
 
   async ngOnInit() {
@@ -97,11 +104,28 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.setupSwipeGesture();
+
+    this.dataSubscription = this.constellationData$
+      .pipe(
+        filter(data => !!data && !!data.imagePath)
+      )
+      .subscribe(data => {
+        console.log('Constellation data updated with image, updating Swiper...');
+        setTimeout(() => {
+          const swiperEl = this.swiperContainerRef?.nativeElement;
+          (swiperEl as any)?.swiper?.update();
+          (swiperEl as any)?.swiper?.zoom?.update();
+          console.log('Swiper update called.');
+        }, 100);
+      });
   }
 
   ngOnDestroy() {
     this.stopOrientationListener();
     this.gesture?.destroy();
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
   }
 
   startOrientationListener() {
