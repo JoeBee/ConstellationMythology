@@ -111,6 +111,7 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     this.startOrientationListener();
     await this.loadConstellationList();
     this.startOrientationUpdates();
+    this.setupVisibilityChangeListener();
   }
 
   ngAfterViewInit() {
@@ -143,6 +144,8 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.motionCheckTimer) {
       clearTimeout(this.motionCheckTimer);
     }
+    // Remove visibility listener if it was added
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   startOrientationListener() {
@@ -337,18 +340,31 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
           throw new Error('Location permission denied. Please enable location services in settings.');
         }
       }
-      // Get the current position
-      // High accuracy is useful for astronomy
-      return await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+      // Get the current position with increased timeout (30 seconds instead of default)
+      return await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 30000 // Increase timeout to 30 seconds
+      });
     } catch (error) {
       console.error('Error getting current position:', error);
       let errorMessage = 'Could not retrieve location.';
+
+      // Check if it's a timeout error
       if (error instanceof Error) {
         errorMessage = error.message;
+
+        // Special handling for timeout errors
+        if (errorMessage.includes('timeout') || errorMessage.includes('timed out')) {
+          errorMessage = 'Could not obtain location in time. Try again in an area with better GPS signal.';
+        }
       }
-      // Re-throw or present alert here? Let's present alert and throw a generic error
-      // so the calling function (findConstellation) also knows an error occurred.
-      await this.presentErrorAlert('Location Error', errorMessage);
+
+      // Don't show alerts for location errors when app might be in background or waking from sleep
+      if (document.visibilityState === 'visible') {
+        await this.presentErrorAlert('Location Error', errorMessage);
+      } else {
+        console.log('Suppressing location error alert because app is not visible:', errorMessage);
+      }
       throw new Error('Failed to get location'); // Let findConstellation handle UI state
     }
   }
@@ -554,13 +570,20 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
     }
 
     try {
-      // Get current position
+      // Get current position, with silent error handling
       let position: Position;
       try {
         position = await this.getCurrentPosition();
       } catch (error) {
         console.error('Error getting position for pointing update:', error);
-        this.pointingConstellationSubject.next('Location unavailable');
+        // Only update the display if we're visible to avoid sleep/wake errors
+        if (document.visibilityState === 'visible') {
+          // Don't show "Location unavailable" when device may be waking from sleep
+          // Instead, keep the last known constellation name
+          if (!this.pointingConstellationSubject.getValue().includes('seeking')) {
+            this.pointingConstellationSubject.next('Waiting for location...');
+          }
+        }
         return;
       }
 
@@ -587,7 +610,10 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
       this.pointingConstellationSubject.next(constellationName);
     } catch (error) {
       console.error('Error updating pointing constellation:', error);
-      this.pointingConstellationSubject.next('Error');
+      // Only update if we're visible to avoid sleep/wake errors
+      if (document.visibilityState === 'visible') {
+        this.pointingConstellationSubject.next('Error');
+      }
     }
   }
 
@@ -633,6 +659,44 @@ export class ConstellationPage implements OnInit, OnDestroy, AfterViewInit {
       this.lastAzimuth = this.currentAzimuth;
       this.lastAltitude = this.currentAltitude;
     }
+  }
+
+  // Listen for app returning from background/sleep
+  private handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      console.log('App became visible, restarting sensors');
+      // Restart sensors after a brief delay
+      setTimeout(() => {
+        // Reset orientation values
+        this.lastAzimuth = null;
+        this.lastAltitude = null;
+
+        // Restart orientation listener if needed
+        if (!this.orientationListener) {
+          this.startOrientationListener();
+        }
+
+        // Restart timer if needed
+        if (!this.orientationUpdateTimer) {
+          this.startOrientationUpdates();
+        }
+
+        // Update constellation without showing errors
+        this.updatePointingConstellation().catch(error => {
+          console.log('Silent error when updating after visibility change:', error);
+        });
+      }, 1000);
+    } else {
+      console.log('App hidden, may go to sleep');
+    }
+  }
+
+  // Setup visibility change listener
+  setupVisibilityChangeListener() {
+    // Remove any existing listener first
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    // Add the listener
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
 }

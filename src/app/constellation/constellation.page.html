@@ -7,21 +7,21 @@
 </ion-header>
 
 <!-- Current pointing constellation display -->
-<div class="pointing-display ion-text-center ion-padding-vertical">
-  <div class="pointing-label">Currently pointing at:&nbsp;&nbsp;&nbsp;</div>
-  <div class="pointing-constellation" [class.seeking]="(pointingConstellation$ | async) === 'seeking...'">
-    {{ pointingConstellation$ | async }}
+<div class="pointing-display ion-padding-vertical">
+  <div class="pointing-content">
+    <div class="pointing-info">
+      <div class="pointing-label">Currently pointing at:&nbsp;&nbsp;&nbsp;</div>
+      <div class="pointing-constellation" [class.seeking]="(pointingConstellation$ | async) === '...seeking'">
+        {{ pointingConstellation$ | async }}
+      </div>
+    </div>
+    <ion-button (click)="clearData()" fill="clear" size="small" class="refresh-button">
+      <ion-icon name="refresh-outline"></ion-icon>
+    </ion-button>
   </div>
 </div>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-
-  <!-- Moved ion-buttons here with fixed positioning -->
-  <ion-buttons slot="fixed" style="top: 10px; right: 10px; z-index: 10;">
-    <ion-button (click)="clearData()">
-      <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-    </ion-button>
-  </ion-buttons>
 
   <!-- Swipe Right Indicator -->
   <ion-icon name="chevron-forward-outline" class="swipe-indicator swipe-indicator-right"
@@ -61,17 +61,20 @@
     </div>
   </ng-container>
 
-  <div class="ion-text-center ion-margin-top">
-    <strong>Point your phone at the sky and<br>press the 'Find Constellation' button
-      <br>- or -<br>select a constellation from the dropdown</strong>
+  <!-- Only show instructions when no constellation image is displayed -->
+  <ng-container *ngIf="constellationData$ | async as constellationData">
+    <div class="ion-text-center ion-margin-top"
+      *ngIf="!constellationData.imagePath || constellationData.name === 'Unknown' || constellationData.name?.startsWith('Error:')">
+      <strong>Point your phone at the sky and<br>press the 'Constellation Myths and Meanings' button
+        <br>- or -<br>select a constellation from the dropdown</strong>
+    </div>
+  </ng-container>
 
-  </div>
-
-  <br><br>
   <div class="ion-text-center ion-margin-top">
-    <ion-button (click)="findConstellation()" expand="block">Find Constellation</ion-button>
+    <ion-button (click)="findConstellation()" expand="block" class="cosmic-button">
+      <span>Constellation Myths and Meanings</span>
+    </ion-button>
   </div>
-  <br><br>
 
   <ion-item class="ion-margin-top">
     <ion-label>Celestial Selection...:</ion-label>
