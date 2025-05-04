@@ -87,14 +87,17 @@ export class AstrologyPage implements OnInit, OnDestroy, AfterViewInit {
                 threshold: 15,
                 onEnd: (detail) => {
                     if (detail.deltaX > 100 && Math.abs(detail.deltaY) < 100) {
-                        console.log('Swipe right detected on Astrology page -> Astrology');
+                        console.log('Swipe right detected on Astrology page -> Myth');
                         this.navigateToMyth();
+                    } else if (detail.deltaX < -100 && Math.abs(detail.deltaY) < 100) {
+                        console.log('Swipe left detected on Astrology page -> Heavenly Guidance');
+                        this.navigateToHeavenlyGuidance();
                     }
                 }
             }, true);
 
             this.gesture.enable(true);
-            console.log('Swipe gesture enabled for Astrology page (right -> Astrology)');
+            console.log('Swipe gesture enabled for Astrology page (right -> Myth, left -> Heavenly Guidance)');
         } catch (err) {
             console.error('Error setting up swipe gesture on Astrology page:', err);
         }
@@ -103,6 +106,11 @@ export class AstrologyPage implements OnInit, OnDestroy, AfterViewInit {
     navigateToMyth() {
         console.log('Navigating to Myth page from Astrology');
         this.router.navigateByUrl('/tabs/myth', { replaceUrl: true });
+    }
+
+    navigateToHeavenlyGuidance() {
+        console.log('Navigating to Heavenly Guidance page from Astrology');
+        this.router.navigateByUrl('/tabs/heavenly-guidance', { replaceUrl: true });
     }
 
     // ---
