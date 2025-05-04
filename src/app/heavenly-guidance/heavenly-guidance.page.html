@@ -1,10 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>*** Celestial Guidance</ion-title>
+    <ion-title>Celestial Guidance</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Swipe Left (Back to previous page) Indicator -->
+  <ion-icon name="chevron-back-outline" class="swipe-indicator swipe-indicator-left"
+    (click)="navigateBack()"></ion-icon>
+
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">*** ***Celestial Guidance</ion-title>
@@ -52,19 +56,20 @@
   <!-- Guidance Display Card -->
   <ion-card *ngIf="horoscope">
     <ion-card-header>
-      <ion-card-title>Your Guidance</ion-card-title>
+      <ion-card-title>Heavenly Guidance</ion-card-title>
       <!-- Add Narration Buttons -->
       <div style="display: flex; justify-content: flex-end; gap: 5px;">
+        <div style="display: flex; gap: 5px;">{{ selectedZodiac }}</div>
         <ion-button fill="clear" size="small" (click)="narrateGuidance()" aria-label="Narrate guidance">
-          <ion-icon slot="icon-only" name="mic-outline" color="primary"></ion-icon>
+          <ion-icon slot="icon-only" name="mic-outline" color="primary" style="font-size: 2.5em;"></ion-icon>
         </ion-button>
         <ion-button fill="clear" size="small" (click)="stopReading()" aria-label="Stop narration">
-          <ion-icon slot="icon-only" name="square-outline" color="danger"></ion-icon>
+          <ion-icon slot="icon-only" name="square-outline" color="danger" style="font-size: 2.5em;"></ion-icon>
         </ion-button>
       </div>
     </ion-card-header>
     <ion-card-content>
-      <p style="white-space: pre-wrap;">{{ horoscope }}</p>
+      <p style="white-space: pre-wrap;" [innerHTML]="horoscope"></p>
     </ion-card-content>
   </ion-card>
 

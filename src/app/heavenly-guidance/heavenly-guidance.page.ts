@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -23,14 +23,17 @@ import {
   IonRow,
   IonCol,
   IonIcon,
-  AlertController
+  AlertController,
+  Gesture,
+  GestureController
 } from '@ionic/angular/standalone';
 import { UserProfileService } from '../services/user-profile.service';
 import { HoroscopeService } from '../services/horoscope.service';
 import { finalize } from 'rxjs/operators';
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { addIcons } from 'ionicons';
-import { micOutline, squareOutline, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
+import { micOutline, squareOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline } from 'ionicons/icons';
+import { Router } from '@angular/router';
 
 // Interface for the zodiac sign object
 interface ZodiacSign {
@@ -69,7 +72,9 @@ interface ZodiacSign {
     IonIcon
   ]
 })
-export class HeavenlyGuidancePage implements OnInit {
+export class HeavenlyGuidancePage implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(IonContent) content!: IonContent;
+  private gesture?: Gesture;
 
   // Updated zodiacSigns array to include icon paths
   zodiacSigns: ZodiacSign[] = [
@@ -96,9 +101,11 @@ export class HeavenlyGuidancePage implements OnInit {
   constructor(
     private userProfileService: UserProfileService,
     private horoscopeService: HoroscopeService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private router: Router,
+    private gestureCtrl: GestureController
   ) {
-    addIcons({ micOutline, squareOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ chevronBackOutline, micOutline, squareOutline, chevronDownOutline, chevronUpOutline });
   }
 
   async ngOnInit() {
@@ -205,5 +212,37 @@ export class HeavenlyGuidancePage implements OnInit {
     } catch (e) {
       console.error("Error presenting alert:", e);
     }
+  }
+
+  ngAfterViewInit() {
+    this.setupSwipeGesture();
+  }
+
+  ngOnDestroy() {
+    this.gesture?.destroy();
+  }
+
+  async setupSwipeGesture() {
+    const contentEl = await this.content.getScrollElement();
+    this.gesture = this.gestureCtrl.create({
+      el: contentEl,
+      gestureName: 'swipe-right',
+      direction: 'x',
+      threshold: 15,
+      onEnd: (detail) => {
+        if (detail.deltaX > 100 && Math.abs(detail.deltaY) < 100) {
+          console.log('Swipe right detected on Heavenly Guidance page');
+          this.navigateBack();
+        }
+      }
+    }, true);
+
+    this.gesture.enable(true);
+    console.log('Swipe gesture enabled for Heavenly Guidance page');
+  }
+
+  navigateBack() {
+    console.log('Navigating back to Astrology page from Heavenly Guidance');
+    this.router.navigateByUrl('/tabs/astrology', { replaceUrl: true });
   }
 }

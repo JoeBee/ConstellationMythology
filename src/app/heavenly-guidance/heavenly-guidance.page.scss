@@ -4,7 +4,8 @@ ion-content {
 
 /* Style the radio items for better readability */
 ion-item {
-    --background: rgba(var(--ion-color-step-100-rgb, 255, 255, 255), 0.8);
+    --background: rgba(255, 255, 255, 0.5);
+    /* Semi-transparent background for radio buttons */
     --border-radius: 8px;
     margin-bottom: 5px;
 
@@ -18,20 +19,42 @@ ion-item {
     ion-label,
     .radio-text-label {
         // Add a class for more specific targeting if needed
-        color: var(--ion-color-step-850, #262626); // Darker text color
+        color: var(--ion-color-step-950, #121212); // Darker text color
         font-weight: 500;
     }
 }
 
 ion-card {
-    --background: rgba(var(--ion-color-step-150-rgb, 242, 242, 242), 0.9);
+    --background: rgba(242, 242, 242, 0.7);
+    /* Semi-transparent background for cards */
+
+    ion-card-content p {
+        color: var(--ion-color-step-950, #121212);
+        /* Dark text for horoscope */
+        font-weight: 500;
+    }
 }
 
-/* Style for the new collapse button */
-.collapse-button {
-    margin-left: auto; // Push the button to the right of the header
-
-    ion-icon {
-        color: var(--ion-color-step-600, #666666); // Make chevron icon darker
+/* Style for the zodiac selection header */
+ion-list-header {
+    ion-label {
+        color: var(--ion-color-step-950, #121212); // Very dark text
+        font-size: 1.3rem; // Larger text
+        font-weight: 600;
     }
+
+    /* Style for the chevron button */
+    .collapse-button {
+        margin-left: auto; // Push the button to the right of the header
+
+        ion-icon {
+            color: var(--ion-color-step-950, #121212); // Dark chevron icon to match the text
+            font-size: 24px; // Much larger chevron
+        }
+    }
+}
+
+/* Prevent button text from being all caps */
+ion-button {
+    text-transform: none !important;
 }
