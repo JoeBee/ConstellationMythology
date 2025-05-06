@@ -45,21 +45,22 @@
 
   <!-- Buttons Container -->
   <div class="ion-padding-top ion-text-center">
-    <ion-button (click)="getGuidance()" [disabled]="!selectedZodiac || isLoading">
+    <ion-button (click)="getGuidance()" [disabled]="!selectedZodiac || isLoading" expand="block" class="cosmic-button">
       <ion-spinner *ngIf="isLoading" name="dots" slot="start"></ion-spinner>
-      Daily Guidance from the Heavens
+      <span>Daily Guidance from the Heavens</span>
     </ion-button>
 
     <!-- Removed the old 'Change Sign' button -->
   </div>
 
   <!-- Guidance Display Card -->
-  <ion-card *ngIf="horoscope">
+  <ion-card *ngIf="horoscope"
+    style="--background: rgba(255, 255, 255, 0.7); --ion-card-background: rgba(255, 255, 255, 0.7);">
     <ion-card-header>
-      <ion-card-title>Heavenly Guidance</ion-card-title>
+      <!-- <ion-card-title>Heavenly Guidance</ion-card-title> -->
       <!-- Add Narration Buttons -->
       <div style="display: flex; justify-content: flex-end; gap: 5px;">
-        <div style="display: flex; gap: 5px;">{{ selectedZodiac }}</div>
+        <div style="display: flex; gap: 5px; margin-right: 100px;">{{ selectedZodiac }}</div>
         <ion-button fill="clear" size="small" (click)="narrateGuidance()" aria-label="Narrate guidance">
           <ion-icon slot="icon-only" name="mic-outline" color="primary" style="font-size: 2.5em;"></ion-icon>
         </ion-button>
@@ -73,7 +74,8 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card *ngIf="horoscopeError">
+  <ion-card *ngIf="horoscopeError"
+    style="--background: rgba(255, 255, 255, 0.6); --ion-card-background: rgba(255, 255, 255, 0.7);">
     <ion-card-header>
       <ion-card-title color="danger">Error</ion-card-title>
     </ion-card-header>

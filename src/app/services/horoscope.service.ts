@@ -145,7 +145,7 @@ export class HoroscopeService {
       try {
         const guidance = this.buildGuidanceText(userSign, planetPositions);
         console.log('[Guidance Service] Successfully generated guidance.');
-        return of('yyyyy' + guidance + 'zzzzz');
+        return of(guidance);
       } catch (buildError: any) {
         debugInfo += `\nError building text: ${buildError.message || buildError}`;
         console.error('[Guidance Service] Error during buildGuidanceText:', buildError);
@@ -267,10 +267,9 @@ export class HoroscopeService {
       introduction = `Today's celestial bodies are aligning to illuminate your ${randomUserKeyword}.`;
     }
 
-    // Assemble the guidance text
-    // let top = `${title}\n\n${introduction} The stars reveal:\n\n`;
-    let topIntro = `topIntro: ${title} ${introduction}\n`;
-    let granularDetails = '***granular:';
+    let topIntro = `${introduction}\n`;
+
+    let granularDetails = '';
     // Detail each planet's position and influence with more variation
     planetPositions.forEach(planetInfo => {
       const myth = this.planetMythology[planetInfo.name] || planetInfo.name;
@@ -299,20 +298,20 @@ export class HoroscopeService {
     });
 
     // Add personalized conclusion based on dominant element and relationship type
+    let relationshipText = ''; // '*** RelationshipText:';
     if (relationshipType === 'conjunction') {
-      granularDetails += `\nWith ${dominantSign} energy prominent today, your natural ${userSign} ${randomUserKeyword} is strongly emphasized.`;
+      relationshipText += `\nWith ${dominantSign} energy prominent today, your natural ${userSign} ${randomUserKeyword} is strongly emphasized.`;
     } else if (relationshipType === 'trine' || relationshipType === 'sextile') {
-      granularDetails += `\nThe ${dominantSign} ${dominantTheme} flows effortlessly with your ${userSign} nature, supporting your ${randomUserKeyword}.`;
+      relationshipText += `\nThe ${dominantSign} ${dominantTheme} flows effortlessly with your ${userSign} nature, supporting your ${randomUserKeyword}.`;
     } else if (relationshipType === 'square') {
-      granularDetails += `\nThe ${dominantSign} ${dominantTheme} creates productive tension with your ${userSign} approach, pushing you to grow.`;
+      relationshipText += `\nThe ${dominantSign} ${dominantTheme} creates productive tension with your ${userSign} approach, pushing you to grow.`;
     } else if (relationshipType === 'opposition') {
-      granularDetails += `\nBalance the ${dominantSign} ${dominantTheme} with your natural ${userSign} qualities to find wholeness today.`;
+      relationshipText += `\nBalance the ${dominantSign} ${dominantTheme} with your natural ${userSign} qualities to find wholeness today.`;
     } else {
-      granularDetails += `\nConsider how the ${dominantSign} ${dominantTheme} can complement your ${userSign} ${randomUserKeyword} today.`;
+      relationshipText += `\nConsider how the ${dominantSign} ${dominantTheme} can complement your ${userSign} ${randomUserKeyword} today.`;
     }
-    granularDetails += '+++++';
 
-    let topSumary = '***topSumary:';
+    let topSumary = '';
     // Add element-specific advice
     if (dominantElement === 'fire') {
       topSumary += `\nEmbrace passion and creative inspiration in your endeavors today.`;
@@ -323,14 +322,15 @@ export class HoroscopeService {
     } else if (dominantElement === 'water') {
       topSumary += `\nTrust your intuition and emotional depth to guide you today.`;
     }
-    granularDetails = '=====' + granularDetails + '=====';
+    // granularDetails = 'Granular Details: ' + granularDetails;
 
     // Simple placeholder if generation fails somehow
     if (planetPositions.length === 0) {
       topIntro = `Today's celestial patterns offer unique insights for ${userSign}. Reflect on your inner compass.`;
     }
 
-    return topIntro + 'aaaaa' + topSumary + 'bbbbbb' + '\n\nDetails: ' + granularDetails + 'ccccc';
+    return topIntro + relationshipText + '\n' + topSumary +
+      '\n\nGuiding Details:\n' + granularDetails;
   }
 
   private addMythologicalFlavor(sign: string, description: string): string {
