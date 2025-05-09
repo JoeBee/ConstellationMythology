@@ -34,6 +34,7 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { addIcons } from 'ionicons';
 import { micOutline, squareOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 // Interface for the zodiac sign object
 interface ZodiacSign {
@@ -77,7 +78,7 @@ export class HeavenlyGuidancePage implements OnInit, OnDestroy, AfterViewInit {
   private gesture?: Gesture;
 
   // Google AI Configuration
-  private googleAiApiKey = 'AIzaSyAWrWkLVJc-AGdNcOCbG5KIaYaKv0GkSbk';
+  private googleAiApiKey = environment.googleAiApiKey;
   private googleAiProjectName = 'ConstellationMythology';
 
   // Updated zodiacSigns array to include icon paths

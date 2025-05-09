@@ -60,7 +60,7 @@
       <!-- <ion-card-title>Heavenly Guidance</ion-card-title> -->
       <!-- Add Narration Buttons -->
       <div style="display: flex; justify-content: flex-end; gap: 5px;">
-        <div style="display: flex; gap: 5px; margin-right: 100px;">{{ selectedZodiac }}</div>
+        <!-- <div style="display: flex; gap: 5px; margin-right: 100px;">{{ selectedZodiac }}</div> -->
         <ion-button fill="clear" size="small" (click)="narrateGuidance()" aria-label="Narrate guidance">
           <ion-icon slot="icon-only" name="mic-outline" color="primary" style="font-size: 2.5em;"></ion-icon>
         </ion-button>
@@ -70,7 +70,8 @@
       </div>
     </ion-card-header>
     <ion-card-content style="white-space: pre-wrap;">
-      <div [innerHTML]="horoscope"></div>
+      <div style="margin-top: 0; margin-bottom: 50px; 
+       font-family: 'Verdana', sans-serif; font-size: 1.5em;" [innerHTML]="horoscope"></div>
     </ion-card-content>
   </ion-card>
 

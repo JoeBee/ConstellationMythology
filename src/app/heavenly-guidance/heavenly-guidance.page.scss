@@ -28,10 +28,22 @@ ion-card {
     --background: rgba(242, 242, 242, 0.6);
     /* Semi-transparent background for cards */
 
+    ion-card-content {
+        font-family: Verdana, sans-serif;
+        font-size: 12px;
+    }
+
     ion-card-content p {
         color: var(--ion-color-step-950, #121212);
         /* Dark text for horoscope */
         font-weight: 500;
+    }
+
+    ion-card-content li {
+        margin-top: 0;
+        margin-bottom: 0px; // Adjust this value as needed
+        padding-top: 0;
+        padding-bottom: 0;
     }
 }
 

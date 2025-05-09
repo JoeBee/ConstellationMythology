@@ -84,3 +84,6 @@ Thumbs.db
 /android/app/src/main/res/drawable-land-night-hdpi
 ios/
 android/
+
+# Environment files
+src/environments/environment.ts
