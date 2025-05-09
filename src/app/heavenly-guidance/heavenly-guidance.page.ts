@@ -76,6 +76,10 @@ export class HeavenlyGuidancePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content!: IonContent;
   private gesture?: Gesture;
 
+  // Google AI Configuration
+  private googleAiApiKey = 'AIzaSyAWrWkLVJc-AGdNcOCbG5KIaYaKv0GkSbk';
+  private googleAiProjectName = 'ConstellationMythology';
+
   // Updated zodiacSigns array to include icon paths
   zodiacSigns: ZodiacSign[] = [
     { name: 'Aries', icon: 'assets/icons/zodiac/aries.svg' },
@@ -136,34 +140,37 @@ export class HeavenlyGuidancePage implements OnInit, OnDestroy, AfterViewInit {
   getGuidance() {
     if (!this.selectedZodiac) {
       console.warn('HeavenlyGuidancePage: No zodiac sign selected.');
+      this.presentErrorAlert('Selection Missing', 'Please select a zodiac sign first.');
       return;
     }
-    console.log('HeavenlyGuidancePage: Getting guidance for:', this.selectedZodiac);
+    console.log('HeavenlyGuidancePage: Getting guidance for:', this.selectedZodiac, 'using Google AI.');
     this.isLoading = true;
     this.horoscope = null;
     this.horoscopeError = null;
 
-    this.horoscopeService.generateAstrologicalGuidance(this.selectedZodiac)
+    this.horoscopeService.getGoogleAiHoroscope(this.selectedZodiac, this.googleAiApiKey, this.googleAiProjectName)
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          console.log('HeavenlyGuidancePage: Guidance fetch finalized.');
+          console.log('HeavenlyGuidancePage: Google AI guidance fetch finalized.');
         })
       )
       .subscribe({
         next: (guidance) => {
-          console.log('HeavenlyGuidancePage: Received guidance:', guidance);
-          if (guidance.startsWith('[DEBUG') || guidance.startsWith('FAIL:')) {
+          console.log('HeavenlyGuidancePage: Received details from Google AI call simulation:', guidance);
+          // For now, we display the detailed prompt/simulation info.
+          // In a real implementation, this would be the AI-generated horoscope.
+          if (guidance.startsWith('FAIL:')) { // Check if the service returned a simulated failure
             this.horoscope = null;
             this.horoscopeError = guidance;
           } else {
-            this.horoscope = guidance;
+            this.horoscope = guidance; // Displaying the prompt/details from the service
             this.horoscopeError = null;
           }
         },
         error: (err) => {
-          console.error('HeavenlyGuidancePage: Error getting guidance:', err);
-          let message = 'An unexpected error occurred while fetching guidance.';
+          console.error('HeavenlyGuidancePage: Error getting Google AI guidance:', err);
+          let message = 'An unexpected error occurred while fetching guidance from Google AI.';
           if (err instanceof Error) { message = err.message; }
           else if (typeof err === 'string') { message = err; }
           this.horoscopeError = message;
