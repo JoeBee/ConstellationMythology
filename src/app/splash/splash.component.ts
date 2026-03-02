@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AnimationController } from '@ionic/angular/standalone';
-import { IonContent, IonImg } from '@ionic/angular/standalone';
+import { IonImg } from '@ionic/angular/standalone';
 
 @Component({
     selector: 'app-splash',
     templateUrl: './splash.component.html',
     styleUrls: ['./splash.component.scss'],
     standalone: true,
-    imports: [CommonModule, IonContent, IonImg]
+    imports: [CommonModule, IonImg]
 })
 export class SplashComponent implements OnInit {
     showSplash = true;

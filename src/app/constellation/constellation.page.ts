@@ -15,12 +15,9 @@ import {
   IonCardTitle,
   GestureController,
   Gesture,
-  IonFooter,
   IonCardContent,
-  IonList,
   IonSelect,
-  IonSelectOption,
-  IonButtons
+  IonSelectOption
 } from '@ionic/angular/standalone';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
@@ -46,10 +43,9 @@ import { filter } from 'rxjs/operators';
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonButton, CommonModule, IonIcon, IonItem, IonLabel,
     IonCard, IonCardHeader, IonCardTitle,
-    IonFooter, IonCardContent,
-    IonList, IonSelect, IonSelectOption,
-    FormsModule,
-    IonButtons
+    IonCardContent,
+    IonSelect, IonSelectOption,
+    FormsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
