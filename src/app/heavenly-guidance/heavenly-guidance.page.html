@@ -1,0 +1,113 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Celestial Guidance</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Swipe Left (Back to previous page) Indicator -->
+  <ion-icon name="chevron-back-outline" class="swipe-indicator swipe-indicator-left"
+    (click)="navigateBack()"></ion-icon>
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Celestial Guidance</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Section Header with Collapse Toggle -->
+  <ion-list-header>
+    <ion-label>{{ selectedZodiac ? selectedZodiac : 'Choose Your Zodiac Sign' }}</ion-label>
+    <div>
+      <ion-button (click)="getGuidance()" [disabled]="!selectedZodiac || isLoading"
+        class="cosmic-button custom-guidance-button"
+        style="align-items: center; margin-left: 0; margin-right: 10px; display: inline-flex;">
+        <ion-spinner *ngIf="isLoading" name="dots" slot="start"></ion-spinner>
+        <span><br>Daily Guidance</span>
+      </ion-button>
+    </div>
+    <ion-button fill="clear" size="small" (click)="toggleZodiacSelection()" class="collapse-button">
+      <ion-icon slot="icon-only"
+        [name]="showZodiacSelection ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+    </ion-button>
+  </ion-list-header>
+
+  <!-- Container for Zodiac Selection (Collapsible) -->
+  <div *ngIf="showZodiacSelection">
+    <ion-radio-group [value]="selectedZodiac" (ionChange)="zodiacChanged($event)">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" *ngFor="let sign of zodiacSigns">
+            <ion-item lines="none">
+              <ion-radio [value]="sign.name" labelPlacement="start">
+                <!-- Use labelPlacement="start" and put icon/text manually after -->
+                <ion-icon [src]="sign.icon" aria-hidden="true" slot="start" size="small"></ion-icon>
+                <span class="radio-text-label">{{ sign.name }}</span> <!-- Apply class for styling -->
+              </ion-radio>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-radio-group>
+  </div>
+
+  <!-- --- -->
+  <!-- Summary Guidance Display Card -->
+  <ion-card *ngIf="horoscopeSummary"
+    style="--background: rgba(255, 255, 255, 0.7); --ion-card-background: rgba(255, 255, 255, 0.7);">
+    <ion-card-header>
+      <div style="display: flex; justify-content: flex-end; gap: 5px;">
+        <!-- Container for TTS buttons -->
+        <div
+          style="width: 100%; display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+          <ion-button fill="clear" size="small" (click)="narrateSummaryGuidance()" aria-label="Narrate guidance">
+            <ion-icon slot="icon-only" name="mic-outline" color="primary" style="font-size: 3.2em;"></ion-icon>
+          </ion-button>
+
+          <!-- Stop Reading Button copied from myth.page.html (with adjustments) -->
+          <ion-button style="background-color: #f04141; display: flex; justify-content: center; align-items: center;"
+            (click)="stopReading()" fill="clear" aria-label="Stop">
+            <ion-icon slot="icon-only" name="square" style="color: #ffd7d7; font-size: 2.0em;"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content style="white-space: pre-wrap;">
+
+
+      <div style="margin-top: 0; margin-bottom: 50px; 
+       font-family: 'Verdana', sans-serif; font-size: 1.5em; color: #000000;" [innerHTML]="horoscopeSummary"></div>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- --- -->
+  <!-- Detailed Guidance Display Card -->
+  <ion-card *ngIf="horoscopeDetails"
+    style="--background: rgba(255, 255, 255, 0.7); --ion-card-background: rgba(255, 255, 255, 0.7);">
+    <ion-card-header>
+      <div style="display: flex; justify-content: flex-end; gap: 5px;">
+        <!-- Container for TTS buttons -->
+        <div
+          style="width: 100%; display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+          <ion-button fill="clear" size="small" (click)="narrateDetailsGuidance()" aria-label="Narrate guidance">
+            <ion-icon slot="icon-only" name="mic-outline" color="primary" style="font-size: 3.2em;"></ion-icon>
+          </ion-button>
+
+          <ion-button style="background-color: #f04141; display: flex; justify-content: center; align-items: center;"
+            (click)="stopReading()" fill="clear" aria-label="Stop">
+            <ion-icon slot="icon-only" name="square" style="color: #ffd7d7; font-size: 2.0em;"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content style="white-space: pre-wrap;">
+
+      <div style="margin-top: 0; margin-bottom: 50px; 
+    font-family: 'Verdana', sans-serif; font-size: 1.5em; color: #000000;" [innerHTML]="horoscopeDetails"></div>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

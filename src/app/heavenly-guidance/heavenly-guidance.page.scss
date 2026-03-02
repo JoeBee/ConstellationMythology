@@ -1,0 +1,226 @@
+ion-content {
+    --background: url('/assets/GuidanceBackground.jpg') no-repeat center center / cover;
+}
+
+/* Style the radio items for better readability */
+ion-item {
+    --background: rgba(255, 255, 255, 0.5);
+    /* Semi-transparent background for radio buttons */
+    --border-radius: 8px;
+    margin-bottom: 5px;
+
+    ion-radio {
+        /* Style the radio button circle itself */
+        --color-checked: var(--ion-color-primary);
+        margin-right: 8px; // Add space between radio and icon/label
+    }
+
+    /* Target the text part of the radio label specifically */
+    ion-label,
+    .radio-text-label {
+        // Add a class for more specific targeting if needed
+        color: var(--ion-color-step-950, #121212); // Darker text color
+        font-weight: 500;
+    }
+}
+
+ion-card {
+    --background: rgba(242, 242, 242, 0.6);
+    /* Semi-transparent background for cards */
+
+    ion-card-content {
+        font-family: Verdana, sans-serif;
+        font-size: 12px;
+    }
+
+    ion-card-content p {
+        color: var(--ion-color-step-950, #121212);
+        /* Dark text for horoscope */
+        font-weight: 500;
+    }
+
+    ion-card-content li {
+        margin-top: 0;
+        margin-bottom: 0px; // Adjust this value as needed
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    // Add this new rule for hr
+    ion-card-content hr {
+        border: none;
+        border-top: 1px solid #8c8c8c; // A medium grey color, adjust as needed
+        margin: 1em 0; // Add some vertical spacing
+        height: 1px;
+        width: 100%; // Ensure it spans the full width available
+    }
+}
+
+/* Style for the zodiac selection header */
+ion-list-header {
+    ion-label {
+        font-weight: bold;
+        color: white;
+        font-size: 1.8rem; // Larger text
+    }
+
+    /* Style for the chevron button */
+    .collapse-button {
+        margin-left: auto; // Push the button to the right of the header
+
+        ion-icon {
+            font-weight: bold;
+            color: white;
+            font-size: 1.8rem; // Larger icon
+        }
+    }
+}
+
+/* Prevent button text from being all caps */
+ion-button {
+    text-transform: none !important;
+}
+
+/* Cosmic button animation with brighter rainbow colors */
+@keyframes cosmic-rainbow {
+    0% {
+        background: linear-gradient(45deg, #ff0066, #9900ff);
+        box-shadow: 0 0 15px rgba(255, 0, 102, 0.7);
+    }
+
+    20% {
+        background: linear-gradient(45deg, #9900ff, #0066ff);
+        box-shadow: 0 0 15px rgba(153, 0, 255, 0.7);
+    }
+
+    40% {
+        background: linear-gradient(45deg, #0066ff, #00ffcc);
+        box-shadow: 0 0 15px rgba(0, 102, 255, 0.7);
+    }
+
+    60% {
+        background: linear-gradient(45deg, #00ffcc, #ffcc00);
+        box-shadow: 0 0 15px rgba(0, 255, 204, 0.7);
+    }
+
+    80% {
+        background: linear-gradient(45deg, #ffcc00, #ff3300);
+        box-shadow: 0 0 15px rgba(255, 204, 0, 0.7);
+    }
+
+    100% {
+        background: linear-gradient(45deg, #ff3300, #ff0066);
+        box-shadow: 0 0 15px rgba(255, 51, 0, 0.7);
+    }
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0.9;
+    }
+}
+
+.cosmic-button {
+    --background: transparent;
+    --background-activated: transparent;
+    --background-focused: transparent;
+    --background-hover: transparent;
+    --color: white;
+    --border-radius: 8px;
+    --padding-top: 0px;
+    --padding-bottom: 16px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px !important;
+    // margin: 16px 12px;
+    transform: translateZ(0);
+    /* For better performance */
+    transition: all 0.3s ease;
+
+    /* Override Ionic's uppercase text transformation */
+    text-transform: none !important;
+
+    /* Make all text inside the button not uppercase */
+    ::ng-deep .button-inner {
+        text-transform: none !important;
+    }
+
+    /* Main cosmic background with rainbow colors */
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #ff0066, #9900ff);
+        animation: cosmic-rainbow 15s infinite;
+        animation-timing-function: linear;
+        /* For smoother transitions */
+        z-index: -1;
+        border-radius: 8px;
+    }
+
+    /* Add subtle star twinkling effect */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 60% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 70% 85%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+            radial-gradient(circle at 90% 25%, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+        background-size: 100% 100%;
+        z-index: -1;
+        opacity: 0.7;
+        animation: twinkle 4s infinite alternate;
+        border-radius: 8px;
+    }
+
+    /* Glow effect on hover */
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+}
+
+.custom-guidance-button {
+    --background: rgba(0, 0, 0, 0.6); // Dark semi-transparent background
+    --border-color: #ADFF2F; // Bright yellow-green
+    --border-width: 2px;
+    --border-style: solid;
+    --color: #FFFFFF; // Ensure text is white and visible
+    // width: 60%; // Half its container's width
+    margin-left: 0; // Align left
+    margin-right: 0; // Reset right margin
+    display: block; // Keep as block for width and margin behavior
+    opacity: 0.50; // Semi-transparent before click
+    transition: opacity 0.2s ease-out; // Smooth transition for opacity
+}
+
+.custom-guidance-button:hover,
+.custom-guidance-button:active {
+    opacity: 1; // Fully opaque on hover or click
+}
+
+// Style for the button when it's also a cosmic-button, if specific overrides are needed
+.cosmic-button.custom-guidance-button {
+    // Potentially override or augment cosmic-button styles if necessary
+    // For example, if cosmic-button sets a different text color:
+    --color: #FFFFFF; // Ensure text is white
+}

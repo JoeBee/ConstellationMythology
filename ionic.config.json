@@ -1,0 +1,7 @@
+{
+  "name": "Heavenly Guidance",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
